@@ -11,3 +11,5 @@ Unity 개발 시 사용하는 개인 Framework 소스코드 입니다.
 - [MessagePack](https://github.com/MessagePack-CSharp/MessagePack-CSharp)
 - [ZString](https://github.com/Cysharp/ZString)
 - [Eflatun.SceneReference](https://github.com/starikcetin/Eflatun.SceneReference)
+- [Addressable](https://docs.unity3d.com/Packages/com.unity.addressables@2.2/manual/index.html)
+- [vInspector2](https://assetstore.unity.com/packages/tools/utilities/vinspector-2-252297?locale=ko-KR)

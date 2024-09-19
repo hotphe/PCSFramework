@@ -5,7 +5,7 @@ using System;
 
 namespace PCS.Sound
 {
-    [CreateAssetMenu(fileName = "SoundConfig", menuName = "Config")]
+    [CreateAssetMenu(fileName = "SoundConfig", menuName = "Config/SoundConfig")]
     public class SoundConfig : ScriptableObject
     {
         public SoundPlayer SoundPlayerPrefab;

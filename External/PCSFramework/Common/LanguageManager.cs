@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using PCS.SaveData;
 using UnityEngine;
 using System;
-using Cysharp.Text;
 
 namespace PCS.Common
 {
@@ -21,7 +20,7 @@ namespace PCS.Common
 
         public static async UniTask LoadLanguageAsync(string country)
         {
-            string fileName = ZString.Concat(LANGUAGE, country);
+            string fileName = string.Concat(LANGUAGE, country);
             TextAsset asset;
             try
             {

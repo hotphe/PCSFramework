@@ -1,4 +1,4 @@
-using PCS.Sound;
+﻿using PCS.Sound;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,7 +7,7 @@ using VInspector;
 
 namespace PCS.UI
 {
-    [CreateAssetMenu(fileName = "AtalsConfig", menuName = "Config")]
+    [CreateAssetMenu(fileName = "AtlasConfig", menuName = "Config/AtlasConfig")]
     public class AtlasConfig : ScriptableObject
     {
         public SerializedDictionary<AtlasType, SpriteAtlas> AtlasDataDictionary = new SerializedDictionary<AtlasType, SpriteAtlas>();
@@ -15,8 +15,9 @@ namespace PCS.UI
 
     public enum AtlasType
     {
-        BackGround,
+        Background,
         Icon,
+        Character,
         Particle,
         Etc
     }

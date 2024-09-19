@@ -1,4 +1,4 @@
-using Cysharp.Threading.Tasks;
+ï»¿using Cysharp.Threading.Tasks;
 using Eflatun.SceneReference;
 using PCS.Common;
 using PCS.UI;
@@ -129,16 +129,16 @@ namespace PCS.Scene
             SceneReference activeScene = group.ActiveScene;
             List<SceneReference> additives = group.AdditiveScenes;
 
-            //Load Active Scene
-            if (activeScene.State != SceneReferenceState.Unsafe)
-                SetOperations(activeScene, LoadSceneMode.Additive, operationGroup, handleGruop);
-
             //Load Additive Scenes
             foreach (var additive in additives)
             {
                 if (additive.State != SceneReferenceState.Unsafe)
                     SetOperations(additive, LoadSceneMode.Additive, operationGroup, handleGruop);
             }
+
+            //Load Active Scene
+            if (activeScene.State != SceneReferenceState.Unsafe)
+                SetOperations(activeScene, LoadSceneMode.Additive, operationGroup, handleGruop);
 
             while (!operationGroup.IsDone || !handleGruop.IsDone)
                 await UniTask.Delay(100);
@@ -158,9 +158,9 @@ namespace PCS.Scene
                     var objects = activeScene.LoadedScene.GetRootGameObjects().Select(obj => obj.GetComponent<T>());
                     await initializer(objects.First(obj => obj != null));
                 }
-                catch
+                catch(Exception e)
                 {
-                    Debug.LogError("Initialize presenter failed.");
+                    Debug.LogError($"Initialize presenter failed. {e}");
                 }
             }
             _currentSceneGroup = group;
@@ -208,7 +208,7 @@ namespace PCS.Scene
         }
 
         /// <summary>
-        /// string¿¡¼­ excludes¿¡ Æ÷ÇÔµÈ ¹®ÀÚ¿­À» Á¦°ÅÇÔ.
+        /// stringì—ì„œ excludesì— í¬í•¨ëœ ë¬¸ìì—´ì„ ì œê±°í•¨.
         /// </summary>
         /// <param name="str"></param>
         /// <returns></returns>

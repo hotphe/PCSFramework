@@ -4,20 +4,19 @@ using UnityEngine;
 
 namespace PCS.Common
 {
-    [CreateAssetMenu(fileName = "BaseConfig", menuName = "Config")]
+    [CreateAssetMenu(fileName = "BaseConfig", menuName = "Config/BaseConfig")]
     public class BaseConfig : ScriptableObject
     {
-        private const string SaveName = "PCSConfig";
+        private const string SaveName = "BaseConfig";
 
         public CryptoOption DefaultCryptoOption;
 
         [Header("PCS.SaveData")]
         public string SaveDataCryptoKey = "RGVmZW5zZUFsb25lRGF0YQ==";
-
+        
+        
         [Header("PCS.Network")]
         public Network.HmacConfig NetworkConfig;
-
-
 
         private static BaseConfig instance;
 

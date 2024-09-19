@@ -17,31 +17,7 @@ namespace PCS.SaveData
         public float MasterVolume { get; set; } = 1f;
         public float BGMVolume { get; set; } = 1f;
         public float SFXVolume { get; set; } = 1f;
-        public SystemLanguage Language { get; set; } = SystemLanguage.English;
+        public SystemLanguage Language { get; set; } = SystemLanguage.Korean;
         public bool isFirstRun { get; set; } = true;
-
-
-
-        private static OptionSaveData _instance;
-        public static OptionSaveData Instance
-        {
-            get
-            {
-                if (_instance == null)
-                    _instance = Load();
-                return _instance;
-                
-            }
-        }
-
-        /// <summary>
-        /// 세이브 데이터를 기존으로 되돌림.
-        /// </summary>
-        /// <returns></returns>
-        public static OptionSaveData Revert()
-        {
-            _instance = null;
-            return Instance;
-        }
     }
 }

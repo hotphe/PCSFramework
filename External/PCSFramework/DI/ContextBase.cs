@@ -1,10 +1,9 @@
-using PCS.Common;
+﻿using PCS.Common;
 using PCS.SaveData;
 using PCS.Scene;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
-using VInspector;
 using System.Data.Common;
 
 namespace PCS.DI
@@ -14,6 +13,7 @@ namespace PCS.DI
     {
         [Tooltip("Set Resource Prefab.")]
         [SerializeField] protected List<ProviderBase> _providerPrefab = new List<ProviderBase>();
+
         protected List<IDependencyProvider> providers = new List<IDependencyProvider>();
         protected DIContainer _diContainer;
         
@@ -30,7 +30,6 @@ namespace PCS.DI
             _diContainer.Regist(providers);
             Inject();
         }
-
 
         protected virtual void Inject()
         {

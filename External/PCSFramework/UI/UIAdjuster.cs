@@ -1,29 +1,42 @@
-using Cysharp.Threading.Tasks;
+﻿using Cysharp.Threading.Tasks;
 using UniRx;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PCS.Common;
+using VInspector;
 
 namespace PCS.UI
 {
     public class UIAdjuster : MonoBehaviour
     {
-        private RectTransform _adjustPanel;
-
-        [SerializeField] private CanvasScaler _canvasScaler;
         [SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
+        
+        [SerializeField] private bool _useLetterBox = false;
 
+        [Foldout("LetterBox")]
+        [SerializeField] private CanvasScaler _letterBoxCanavasScaler;
+        [SerializeField] private RectTransform _letterBox;
+        [SerializeField] private RectTransform _letterBoxMaskSizer;
+        [SerializeField] private RectTransform _letterBoxMask;
+        [EndFoldout]
+
+        [Foldout("UIRoot")]
+        [SerializeField] private RectTransform _rootCanvas;
+        [SerializeField] private CanvasScaler _rootCanvasScaler;
+
+        [SerializeField] private RectTransform _adjustPanel;
+        [SerializeField] private AspectRatioFitter _adjustAspectRatioFitter;
         [SerializeField] private RectTransform _topPanel;
         [SerializeField] private RectTransform _centerPanel;
         [SerializeField] private RectTransform _bottomPanel;
         [SerializeField] private RectTransform _leftPanel;
         [SerializeField] private RectTransform _rightPanel;
         [SerializeField] private RectTransform _mainPanel;
+        [EndFoldout]
 
-        private AspectRatioFitter _mainAspectRatioFitter;
-
+        [Foldout("Constants")]
         [SerializeField] private bool _useConstantTop;
         [Condition("_useConstantTop", true)][SerializeField] private float _topHeight;
         [Condition("_useConstantTop", true)][SerializeField] private int _topPriority;
@@ -39,67 +52,28 @@ namespace PCS.UI
         [SerializeField] private bool _useConstantRight;
         [Condition("_useConstantRight", true)][SerializeField] private float _rightWidth;
         [Condition("_useConstantRight", true)][SerializeField] private int _rightPriority;
+        [EndFoldout]
 
-        
-        public Vector2 ReferenceScreenSize => _referenceScreenSize;
-
-        public bool UseConstantTop => _useConstantTop;
-        public bool UseConstantBottom => _useConstantBottom;
-        public bool UseConstantLeft => _useConstantLeft;
-        public bool UseConstantRight => _useConstantRight;
-
-        public RectTransform TopPanel => _topPanel;
-        public RectTransform BottomPanel => _bottomPanel;
-        public RectTransform CenterPanel => _centerPanel;
-        public RectTransform LeftPanel => _leftPanel;
-        public RectTransform RightPanel => _rightPanel;
-        public RectTransform MainPanel => _mainPanel;
-
-        public int TopPriority => _topPriority;
-        public int BottomPriority => _bottomPriority;
-        public int LeftPriority => _leftPriority;
-        public int RightPriority => _rightPriority;
-
-        public float TopHeight => _topHeight;
-        public float BottomHeight => _bottomHeight;
-        public float LeftWidth => _leftWidth;
-        public float RightWidth => _rightWidth;
-
-        public RectTransform AdjustPanel
-        {
-            get
-            {
-                if (_adjustPanel == null)
-                    _adjustPanel = GetComponent<RectTransform>();
-                return _adjustPanel;
-            }
-        }
-
-        public AspectRatioFitter MainAspectRatioFitter
-        {
-            get
-            {
-                if( _mainAspectRatioFitter == null)
-                    _mainAspectRatioFitter = _mainPanel.GetComponent<AspectRatioFitter>();
-                return _mainAspectRatioFitter;
-            }
-        }
+        private float _referenceRatio => _referenceScreenSize.x / _referenceScreenSize.y;
 
         private void Start()
         {
             Apply(ScreenResolutionController.DeviceResolution);
             ScreenResolutionController.OnUpdateDeviceResolution.Subscribe(Apply).AddTo(this);
         }
-
-        private void Update()
-        {
-            Apply(ScreenResolutionController.DeviceResolution);
-        }
-
+        
         public void Apply(Vector2Int deviceResolution)
         {
-            _canvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
-            _canvasScaler.referenceResolution = _referenceScreenSize;
+            _rootCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            _rootCanvasScaler.referenceResolution = _referenceScreenSize;
+
+            _letterBoxCanavasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
+            _letterBoxCanavasScaler.referenceResolution = _referenceScreenSize;
+            AspectRatioFitter.AspectMode mode;
+            if (_rootCanvas.rect.size.x == _referenceScreenSize.x)
+                mode = AspectRatioFitter.AspectMode.WidthControlsHeight;
+            else
+                mode = AspectRatioFitter.AspectMode.HeightControlsWidth;
 
             Vector2 minAnchor = Screen.safeArea.min;
             Vector2 maxAnchor = Screen.safeArea.max;
@@ -108,9 +82,28 @@ namespace PCS.UI
             minAnchor.y /= Screen.height;
             maxAnchor.x /= Screen.width;
             maxAnchor.y /= Screen.height;
+            
+            _adjustPanel.anchorMin = minAnchor;
+            _adjustPanel.anchorMax = maxAnchor;
+            _letterBoxMaskSizer.anchorMin = minAnchor;
+            _letterBoxMaskSizer.anchorMax = maxAnchor;
 
-            AdjustPanel.anchorMin = minAnchor;
-            AdjustPanel.anchorMax = maxAnchor;
+            if (_useLetterBox)
+            {
+                _adjustAspectRatioFitter.aspectMode = mode;
+                _adjustAspectRatioFitter.aspectRatio = _referenceRatio;
+                _adjustPanel.sizeDelta = Vector2.zero;
+
+                _letterBox.gameObject.SetActive(true);
+                _letterBoxMask.sizeDelta = _mainPanel.rect.size;
+            }
+            else
+            {
+                _letterBox.gameObject.SetActive(false);
+                _adjustAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
+                _adjustPanel.offsetMin = Vector2.zero;
+                _adjustPanel.offsetMax = Vector2.zero;
+            }
 
             Vector2 midOffsetMin = new Vector2(0, 0);
             Vector2 midOffsetMax = new Vector2(0, 0);
@@ -124,10 +117,10 @@ namespace PCS.UI
             {
                 leftOffset = 0;
                 rightOffset = 0;
-                if(LeftPriority > TopPriority)
-                    leftOffset = LeftWidth;
-                if(RightPriority > TopPriority)
-                    rightOffset = RightWidth;
+                if(_leftPriority > _topPriority)
+                    leftOffset = _leftWidth;
+                if(_rightPriority > _topPriority)
+                    rightOffset = _rightWidth;
                 _topPanel.anchorMin = new Vector2(0, 1);
                 _topPanel.anchorMax = new Vector2(1, 1);
                 _topPanel.offsetMin = new Vector2(leftOffset, -_topHeight);
@@ -139,10 +132,10 @@ namespace PCS.UI
             { 
                 leftOffset = 0;
                 rightOffset = 0;
-                if (LeftPriority > BottomPriority)
-                    leftOffset = LeftWidth;
-                if (RightPriority > BottomPriority)
-                    rightOffset = RightWidth;
+                if (_leftPriority > _bottomPriority)
+                    leftOffset = _leftWidth;
+                if (_rightPriority > _bottomPriority)
+                    rightOffset = _rightWidth;
                 _bottomPanel.anchorMin = new Vector2(0, 0);
                 _bottomPanel.anchorMax = new Vector2(1, 0);
                 _bottomPanel.offsetMin = new Vector2(leftOffset, 0);
@@ -154,10 +147,10 @@ namespace PCS.UI
             {
                 topOffset = 0;
                 bottomOffset = 0;
-                if (TopPriority >= LeftPriority)
-                    topOffset = TopHeight;
-                if (BottomPriority >= LeftPriority)
-                    bottomOffset = BottomHeight;
+                if (_topPriority >= _leftPriority)
+                    topOffset = _topHeight;
+                if (_bottomPriority >= _leftPriority)
+                    bottomOffset = _bottomHeight;
                 _leftPanel.anchorMin = new Vector2(0, 0);
                 _leftPanel.anchorMax = new Vector2(0, 1);
                 _leftPanel.offsetMin = new Vector2(0, bottomOffset);
@@ -169,10 +162,10 @@ namespace PCS.UI
             {
                 topOffset = 0;
                 bottomOffset = 0;
-                if (TopPriority >= RightPriority)
-                    topOffset = TopHeight;
-                if (BottomPriority >= RightPriority)
-                    bottomOffset = BottomHeight;
+                if (_topPriority >= _rightPriority)
+                    topOffset = _topHeight;
+                if (_bottomPriority >= _rightPriority)
+                    bottomOffset = _bottomHeight;
                 _rightPanel.anchorMin = new Vector2(1, 0);
                 _rightPanel.anchorMax = new Vector2(1, 1);
                 _rightPanel.offsetMin = new Vector2(-_rightWidth, bottomOffset);
@@ -185,24 +178,10 @@ namespace PCS.UI
             _centerPanel.offsetMin = midOffsetMin;
             _centerPanel.offsetMax = midOffsetMax;
 
-            MainAspectRatioFitter.aspectRatio = _referenceScreenSize.x / _referenceScreenSize.y;
-
-            if (IsLongWidth())
-            {
-                MainAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
-            }else
-            {
-                MainAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
-            }
-
             _mainPanel.offsetMin = Vector2.zero;
             _mainPanel.offsetMax = Vector2.zero;
             _mainPanel.localPosition = Vector3.zero;
         }
-
-        private bool IsLongWidth()
-        {
-            return _referenceScreenSize.x / _referenceScreenSize.y < Screen.width / (float)Screen.height;
-        }
+        
     }
 }

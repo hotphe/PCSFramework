@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Unity.VisualScripting;
 using UnityEngine;
 
 namespace PCS.SaveData
@@ -19,6 +20,19 @@ namespace PCS.SaveData
                 return _saveDataKey;
             }
         }
+
+        protected static T _instance;
+
+        public static T Instance
+        {
+            get
+            {
+                if (_instance == null)
+                    _instance = Load();
+                return _instance;
+            }
+        }
+
 
         public bool IsExist => PlayerPrefs.HasKey(SaveDataKey);
 
@@ -58,6 +72,14 @@ namespace PCS.SaveData
             PlayerPrefs.Save();
         }
 
-
+        /// <summary>
+        /// 세이브 데이터를 기존으로 되돌림.
+        /// </summary>
+        /// <returns></returns>
+        public static T Revert()
+        {
+            _instance = null;
+            return Instance;
+        }
     }
 }

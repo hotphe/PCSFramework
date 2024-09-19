@@ -1,4 +1,4 @@
-using System;
+ï»¿using System;
 using UnityEngine;
 using UniRx;
 using PCS.SaveData;
@@ -25,6 +25,8 @@ namespace PCS.UI
 
         public static Vector2Int DeviceResolution => _deviceResolution ?? (_deviceResolution = GetDeviceResolution()).Value;
 
+        public static Vector2 ReferenceScreenSize { get; private set; } = new Vector2(1080, 1920);
+        public static float ReferenceScreenRatio => ReferenceScreenSize.x / ReferenceScreenSize.y;
         private static Vector2Int GetDeviceResolution()
         {
         #if UNITY_EDITOR
@@ -75,6 +77,7 @@ namespace PCS.UI
             var currentResolution = GetDeviceResolution();
             if (currentResolution == DeviceResolution) return;
             _deviceResolution = currentResolution;
+            Debug.Log("Size Changed");
             _onUpdateDeviceResolution.OnNext(DeviceResolution);
         }
 
@@ -96,7 +99,7 @@ namespace PCS.UI
         }
 
         /// <summary>
-        /// Height ±âÁØÀ¸·Î ÇØ»óµµ ¾÷µ¥ÀÌÆ®
+        /// Height ê¸°ì¤€ìœ¼ë¡œ í•´ìƒë„ ì—…ë°ì´íŠ¸
         /// </summary>
         /// <param name="newHeight"></param>
         private static void UpdateResolutionByHeight(float newHeight)

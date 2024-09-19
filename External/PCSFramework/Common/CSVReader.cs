@@ -1,8 +1,7 @@
-using UnityEngine;
+Ôªøusing UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using PCS.Network;
 using Cysharp.Threading.Tasks;
 
 namespace PCS.Common
@@ -22,26 +21,25 @@ namespace PCS.Common
             if (lines.Length <= 1) 
                 return dict;
 
-            //0¡Ÿ¿∫ ¡÷ºÆ, 1¡Ÿ¿∫ headerøÎ¿∏∑Œ ªÁøÎ«’¥œ¥Ÿ.
+            //0Ï§ÑÏùÄ Ï£ºÏÑù, 1Ï§ÑÏùÄ headerÏö©ÏúºÎ°ú ÏÇ¨Ïö©Ìï©ÎãàÎã§.
             var header = Regex.Split(lines[1], SPLIT_RE);
 
             for (int i = 2; i < lines.Length; i++)
             {
                 var values = Regex.Split(lines[i], SPLIT_RE);
                 if (values.Length == 0 || string.IsNullOrWhiteSpace(values[0]) 
-                    || values[0] == "x") //√π ºø¿Ã x ¿œ ∞ÊøÏ «ÿ¥Á ¡Ÿ¿∫ π´Ω√«’¥œ¥Ÿ.
+                    || values[0] == "x") //Ï≤´ ÏÖÄÏù¥ x Ïùº Í≤ΩÏö∞ Ìï¥Îãπ Ï§ÑÏùÄ Î¨¥ÏãúÌï©ÎãàÎã§.
                     continue;
 
                 var entry = new Dictionary<string, string>();
 
-                //0¡Ÿ¿∫ index
+                //0Î≤àÏß∏ columnÏùÄ index
                 for (int j = 1; j < header.Length && j < values.Length; j++)
                 {
                     string value = values[j];
                     value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
                     entry[header[j]] = value;
                 }
-                //values[0] == index
                 dict[values[0]] = entry;
             }
             return dict;

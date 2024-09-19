@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
@@ -49,10 +49,10 @@ namespace PCS.Common
         */
 
         /// <summary>
-        /// Loads an addressable asset into memory without instantiating it.
+        /// Loads an addressable asset into memory with addressable name.
         /// </summary>
         /// <typeparam name="T">The type of the asset.</typeparam>
-        /// <param name="name">The asset name.</param>
+        /// <param name="name">The addressable name.</param>
         /// <param name="canRelease">Indicates whether the asset can be released.</param>
         /// <returns>A UniTask representing the loaded asset.</returns>
         public static async UniTask<T> LoadAssetAsync<T>(string name, bool canRelease)
@@ -74,8 +74,9 @@ namespace PCS.Common
             }
         }
 
+        
         /// <summary>
-        /// Loads addressable assets into memory without instantiating them.
+        /// Loads addressable assets into memory with label.
         /// </summary>
         /// <typeparam name="T">The type of the assets.</typeparam>
         /// <param name="label">The addressable label.</param>
@@ -85,8 +86,14 @@ namespace PCS.Common
         {
             
             AsyncOperationHandle<IList<T>> handle = Addressables.LoadAssetsAsync<T>(label, null);
-
-            await handle.ToUniTask();
+            try
+            {
+                await handle.ToUniTask();
+            }catch
+            {
+                Debug.LogError("Load Asset Failed.");
+                return new List<T>();
+            }
 
             if(handle.Status == AsyncOperationStatus.Succeeded)
             {

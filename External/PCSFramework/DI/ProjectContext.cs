@@ -1,34 +1,35 @@
-using UnityEngine;
-using PCS.DI;
+﻿using UnityEngine;
 using PCS.Common;
 using PCS.SaveData;
-using UnityEngine.SceneManagement;
+using PCS.Scene;
 using Cysharp.Threading.Tasks;
-
-public class ProjectContext : ContextBase
+using PCS.Sound;
+namespace PCS.DI
 {
-    protected async override void Awake()
+    public class ProjectContext : ContextBase
     {
-        base.Awake();
-        if (OptionSaveData.Instance.isFirstRun)
+        protected async override void Awake()
         {
-            OptionSaveData.Instance.isFirstRun = false;
-            OptionSaveData.Instance.Language = Application.systemLanguage;
-            OptionSaveData.Instance.Save();
+            base.Awake();
+
+            if (OptionSaveData.Instance.isFirstRun)
+            {
+                OptionSaveData.Instance.isFirstRun = false;
+                OptionSaveData.Instance.Language = Application.systemLanguage;
+                OptionSaveData.Instance.Save();
+            }
+
+            await LanguageManager.InitializeAsync();
+            await AtlasManager.Instance.InitializeAsync();
+            await SoundManager.Instance.InitializeAsync();
+
+            SceneManager.Instance.AfterSceneLoaded += OnSceneLoaded;
+            SceneManager.Instance.InitializeAsync().Forget();
         }
-        await LanguageManager.InitializeAsync();
-        await AtlasManager.InitializeAsync();
-        PCS.Scene.SceneManager.Instance.InitializeAsync().Forget();
-        PCS.Scene.SceneManager.Instance.AfterSceneLoaded += OnSceneLoaded;
+        private void OnSceneLoaded()
+        {
+            Inject();
+        }
 
-    }
-    private void OnSceneLoaded(Scene scene, LoadSceneMode loadSceneMode)
-    {
-        Inject();
-    }
-
-    private void OnSceneLoaded()
-    {
-        Inject();
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -7,8 +7,8 @@ namespace PCS.Sound
     public class SoundBuilder
     {
         private readonly SoundManager _soundManager;
-        private Vector3 position = Vector3.zero;
-        private bool randomPitch = false;
+        private Vector3 _position = Vector3.zero;
+        private bool _randomPitch = false;
 
         public SoundBuilder(SoundManager soundManager)
         {
@@ -17,13 +17,13 @@ namespace PCS.Sound
 
         public SoundBuilder WithPosition(Vector3 position)
         {
-            this.position = position;
+            this._position = position;
             return this;
         }
 
         public SoundBuilder WithRandomPitch()
         {
-            randomPitch = true;
+            _randomPitch = true;
             return this;
         }
 
@@ -42,10 +42,10 @@ namespace PCS.Sound
 
             SoundPlayer soundPlayer = _soundManager.Get();
             soundPlayer.Initialize(data);
-            soundPlayer.transform.position = position;
+            soundPlayer.transform.position = _position;
             soundPlayer.transform.parent = _soundManager.transform;
 
-            if (randomPitch)
+            if (_randomPitch)
             {
                 soundPlayer.WithRandomPitch();
             }

@@ -59,7 +59,7 @@ namespace PCS.UI
         private void Start()
         {
             Apply(ScreenResolutionController.DeviceResolution);
-            ScreenResolutionController.OnUpdateDeviceResolution.Subscribe(Apply).AddTo(this);
+            //ScreenResolutionController.OnUpdateDeviceResolution.Subscribe(Apply).AddTo(this);
         }
         
         public void Apply(Vector2Int deviceResolution)

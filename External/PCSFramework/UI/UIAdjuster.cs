@@ -26,8 +26,8 @@ namespace PCS.UI
         [SerializeField] private RectTransform _rootCanvas;
         [SerializeField] private CanvasScaler _rootCanvasScaler;
 
-        [SerializeField] private RectTransform _adjustPanel;
-        [SerializeField] private AspectRatioFitter _adjustAspectRatioFitter;
+        [SerializeField] private RectTransform _holderPanel;
+        [SerializeField] private AspectRatioFitter _holderAspectRatioFitter;
         [SerializeField] private RectTransform _topPanel;
         [SerializeField] private RectTransform _centerPanel;
         [SerializeField] private RectTransform _bottomPanel;
@@ -58,7 +58,7 @@ namespace PCS.UI
 
         private void Start()
         {
-            Apply(ScreenResolutionController.DeviceResolution);
+            //Apply(ScreenResolutionController.DeviceResolution);
             //ScreenResolutionController.OnUpdateDeviceResolution.Subscribe(Apply).AddTo(this);
         }
         
@@ -83,16 +83,16 @@ namespace PCS.UI
             maxAnchor.x /= Screen.width;
             maxAnchor.y /= Screen.height;
             
-            _adjustPanel.anchorMin = minAnchor;
-            _adjustPanel.anchorMax = maxAnchor;
+            _holderPanel.anchorMin = minAnchor;
+            _holderPanel.anchorMax = maxAnchor;
             _letterBoxMaskSizer.anchorMin = minAnchor;
             _letterBoxMaskSizer.anchorMax = maxAnchor;
 
             if (_useLetterBox)
             {
-                _adjustAspectRatioFitter.aspectMode = mode;
-                _adjustAspectRatioFitter.aspectRatio = _referenceRatio;
-                _adjustPanel.sizeDelta = Vector2.zero;
+                _holderAspectRatioFitter.aspectMode = mode;
+                _holderAspectRatioFitter.aspectRatio = _referenceRatio;
+                _holderPanel.sizeDelta = Vector2.zero;
 
                 _letterBox.gameObject.SetActive(true);
                 _letterBoxMask.sizeDelta = _mainPanel.rect.size;
@@ -100,9 +100,9 @@ namespace PCS.UI
             else
             {
                 _letterBox.gameObject.SetActive(false);
-                _adjustAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
-                _adjustPanel.offsetMin = Vector2.zero;
-                _adjustPanel.offsetMax = Vector2.zero;
+                _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
+                _holderPanel.offsetMin = Vector2.zero;
+                _holderPanel.offsetMax = Vector2.zero;
             }
 
             Vector2 midOffsetMin = new Vector2(0, 0);

@@ -15,14 +15,14 @@ namespace PCS.UI
         
         [SerializeField] private bool _useLetterBox = false;
 
-        [Foldout("LetterBox")]
+        //[Foldout("LetterBox")]
         [SerializeField] private CanvasScaler _letterBoxCanavasScaler;
         [SerializeField] private RectTransform _letterBox;
         [SerializeField] private RectTransform _letterBoxMaskSizer;
         [SerializeField] private RectTransform _letterBoxMask;
-        [EndFoldout]
+        //[EndFoldout]
 
-        [Foldout("UIRoot")]
+        //[Foldout("UIRoot")]
         [SerializeField] private RectTransform _rootCanvas;
         [SerializeField] private CanvasScaler _rootCanvasScaler;
 
@@ -34,9 +34,9 @@ namespace PCS.UI
         [SerializeField] private RectTransform _leftPanel;
         [SerializeField] private RectTransform _rightPanel;
         [SerializeField] private RectTransform _mainPanel;
-        [EndFoldout]
+        //[EndFoldout]
 
-        [Foldout("Constants")]
+        //[Foldout("Constants")]
         [SerializeField] private bool _useConstantTop;
         [Condition("_useConstantTop", true)][SerializeField] private float _topHeight;
         [Condition("_useConstantTop", true)][SerializeField] private int _topPriority;
@@ -52,7 +52,7 @@ namespace PCS.UI
         [SerializeField] private bool _useConstantRight;
         [Condition("_useConstantRight", true)][SerializeField] private float _rightWidth;
         [Condition("_useConstantRight", true)][SerializeField] private int _rightPriority;
-        [EndFoldout]
+        //[EndFoldout]
 
         private float _referenceRatio => _referenceScreenSize.x / _referenceScreenSize.y;
 

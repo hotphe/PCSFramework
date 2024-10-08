@@ -2,6 +2,7 @@
 #
 # Get latest from https://github.com/github/gitignore/blob/main/Unity.gitignore
 #
+*
 /[Ll]ibrary/
 /[Tt]emp/
 /[Oo]bj/
@@ -14,7 +15,10 @@
 # MemoryCaptures can get excessive in size.
 # They also could contain extremely sensitive data
 /[Mm]emoryCaptures/
-
+!/Assets/
+!/Assets/External/
+!/Assets/External/PCSFramework/
+!/Assets/External/PCSFramework/**
 # Recordings can get excessive in size
 /[Rr]ecordings/
 

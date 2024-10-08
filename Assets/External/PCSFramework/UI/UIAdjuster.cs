@@ -61,6 +61,11 @@ namespace PCS.UI
             ScreenResolutionController.OnUpdateDeviceResolution += Apply;
         }
 
+        private void OnDestroy()
+        {
+            ScreenResolutionController.OnUpdateDeviceResolution -= Apply;
+        }
+
         public void Apply(Vector2Int deviceResolution)
         {
             if (!_useLocalScreenSize)

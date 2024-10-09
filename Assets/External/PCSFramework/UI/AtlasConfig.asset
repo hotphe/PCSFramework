@@ -9,13 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: dec5a9564cad546488ce1b16d6840707, type: 3}
-  m_Name: SoundConfig
+  m_Script: {fileID: 11500000, guid: 231a10f726929524dabf573af7708203, type: 3}
+  m_Name: AtlasConfig
   m_EditorClassIdentifier: 
-  SoundPlayerPrefab: {fileID: 4133191626346173208, guid: 6322516068bcdbb418d0fbbaa2f154d2, type: 3}
-  CollectionCheck: 1
-  DefaultCapacity: 10
-  MaxPoolSize: 100
-  MaxSoundInstances: 30
-  SoundDataDictionary:
+  AtlasDataDictionary:
     SerializedKvps: []

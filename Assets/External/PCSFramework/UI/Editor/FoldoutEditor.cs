@@ -1,9 +1,9 @@
 using System.Collections.Generic;
 using System.Reflection;
 using UnityEditor;
-using UnityEngine;
 using System;
 using PCS.UI;
+using PCS.Common;
 
 [CustomEditor(typeof(UIAdjuster), true)]
 public class FoldoutEditor : Editor
@@ -20,7 +20,6 @@ public class FoldoutEditor : Editor
         while (iterator.NextVisible(enterChildren))
         {
             enterChildren = false;
-            Debug.Log("À¸¿¨");
             var foldAttr = GetAttribute<FoldAttribute>(iterator);
             var endFoldAttr = GetAttribute<EndFoldAttribute>(iterator);
 

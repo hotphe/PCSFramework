@@ -23,6 +23,7 @@ namespace PCS.Sound
 
         public void Initialize(SoundData data)
         {
+            
             _audioSource.clip = data.Clip;
             _audioSource.outputAudioMixerGroup = data.MixerGroup;
             _audioSource.loop = data.Loop;
@@ -49,6 +50,7 @@ namespace PCS.Sound
             _audioSource.ignoreListenerPause = data.AdvancedSoundData.IgnoreListenerPause;
             
             _audioSource.rolloffMode = data.AdvancedSoundData.RolloffMode;
+            
         }
 
         public void Play()

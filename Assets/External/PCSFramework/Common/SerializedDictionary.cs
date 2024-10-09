@@ -14,9 +14,13 @@ public class SerializedDictionary<TKey, TValue> : Dictionary<TKey, TValue>, ISer
     {
         foreach (var kvp in this)
             if (SerializedKvps.FirstOrDefault(r => this.Comparer.Equals(r.Key, kvp.Key)) is SerializedKeyValuePair<TKey, TValue> serializedKvp)
+            {
                 serializedKvp.Value = kvp.Value;
+            }
             else
+            {
                 SerializedKvps.Add(kvp);
+            }
 
         SerializedKvps.RemoveAll(r => r.Key is not null && !this.ContainsKey(r.Key));
 

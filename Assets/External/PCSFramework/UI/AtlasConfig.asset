@@ -34,3 +34,8 @@ MonoBehaviour:
       Index: 3
       IsKeyRepeated: 0
       IsKeyNull: 0
+    - Key: 4
+      Value: {fileID: 0}
+      Index: 4
+      IsKeyRepeated: 1
+      IsKeyNull: 0

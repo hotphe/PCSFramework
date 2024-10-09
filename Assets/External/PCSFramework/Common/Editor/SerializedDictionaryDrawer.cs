@@ -31,16 +31,6 @@ public class SerializedDictionaryDrawer : PropertyDrawer
         
     }
 
-    public Rect AddHeightFromBottom(Rect rect, float f)
-    {
-        float px = rect.height + f;
-
-        rect.y += rect.height;
-        rect.height = px;
-        rect.y -= rect.height;
-        return rect;
-        
-    }
     private void SetupProps(SerializedProperty prop)
     {
         if (_prop != null) return;
@@ -77,8 +67,6 @@ public class SerializedDictionaryDrawer : PropertyDrawer
         _kvpsProp.arraySize = EditorGUI.DelayedIntField(countRect, _kvpsProp.arraySize);
     }
 
-
-
     private void SetupList(SerializedProperty prop)
     {
         if (_reorderableList != null) return;
@@ -88,7 +76,6 @@ public class SerializedDictionaryDrawer : PropertyDrawer
         _reorderableList.elementHeightCallback = GetElementHeight;
         _reorderableList.drawNoneElementCallback = DrawDictionaryIsEmpty;
     }
-
 
     private void DrawElement(Rect rect, int index, bool isActive, bool isFocused)
     {
@@ -169,7 +156,6 @@ public class SerializedDictionaryDrawer : PropertyDrawer
             GUI.Label(rect, _waringIcon);
             _hasAlert = true;
         }
-
     }
 
     private void DrawAlertBox()

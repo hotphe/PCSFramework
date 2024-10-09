@@ -12,10 +12,66 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dec5a9564cad546488ce1b16d6840707, type: 3}
   m_Name: SoundConfig
   m_EditorClassIdentifier: 
-  SoundPlayerPrefab: {fileID: 4133191626346173208, guid: 6322516068bcdbb418d0fbbaa2f154d2, type: 3}
+  SoundPlayerPrefab: {fileID: 0}
   CollectionCheck: 1
   DefaultCapacity: 10
   MaxPoolSize: 100
   MaxSoundInstances: 30
   SoundDataDictionary:
-    SerializedKvps: []
+    SerializedKvps:
+    - Key: 
+      Value:
+        Clip: {fileID: 0}
+        MixerGroup: {fileID: 0}
+        Loop: 0
+        PlayOnAwake: 0
+        FrequentSound: 0
+        AdvancedSoundData:
+          Mute: 0
+          BypassEffects: 0
+          BypassListenerEffects: 0
+          BypassReverbZones: 0
+          Priority: 0
+          Volume: 0
+          Pitch: 0
+          PanStereo: 0
+          SpatialBlend: 0
+          ReverbZoneMix: 0
+          DopplerLevel: 0
+          Spread: 0
+          MinDistance: 0
+          MaxDistance: 0
+          IgnoreListenerVolume: 0
+          IgnoreListenerPause: 0
+          RolloffMode: 0
+      Index: 0
+      IsKeyRepeated: 0
+      IsKeyNull: 0
+    - Key: 
+      Value:
+        Clip: {fileID: 0}
+        MixerGroup: {fileID: 0}
+        Loop: 0
+        PlayOnAwake: 0
+        FrequentSound: 0
+        AdvancedSoundData:
+          Mute: 0
+          BypassEffects: 0
+          BypassListenerEffects: 0
+          BypassReverbZones: 0
+          Priority: 0
+          Volume: 0
+          Pitch: 0
+          PanStereo: 0
+          SpatialBlend: 0
+          ReverbZoneMix: 0
+          DopplerLevel: 0
+          Spread: 0
+          MinDistance: 0
+          MaxDistance: 0
+          IgnoreListenerVolume: 0
+          IgnoreListenerPause: 0
+          RolloffMode: 0
+      Index: 1
+      IsKeyRepeated: 1
+      IsKeyNull: 0

@@ -13,4 +13,24 @@ MonoBehaviour:
   m_Name: AtlasConfig
   m_EditorClassIdentifier: 
   AtlasDataDictionary:
-    SerializedKvps: []
+    SerializedKvps:
+    - Key: 0
+      Value: {fileID: 0}
+      Index: 0
+      IsKeyRepeated: 0
+      IsKeyNull: 0
+    - Key: 1
+      Value: {fileID: 0}
+      Index: 1
+      IsKeyRepeated: 0
+      IsKeyNull: 0
+    - Key: 2
+      Value: {fileID: 0}
+      Index: 2
+      IsKeyRepeated: 0
+      IsKeyNull: 0
+    - Key: 4
+      Value: {fileID: 0}
+      Index: 3
+      IsKeyRepeated: 0
+      IsKeyNull: 0

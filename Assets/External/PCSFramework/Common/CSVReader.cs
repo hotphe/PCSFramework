@@ -12,28 +12,27 @@ namespace PCS.Common
         static string LINE_SPLIT_RE = @"\r\n|\n\r|\n|\r";
         static char[] TRIM_CHARS = { '\"' };
 
-        public static Dictionary<string, Dictionary<string, string>> ReadAll(TextAsset data)
+        public static Dictionary<string, Dictionary<string, string>> ReadAll(TextAsset data, int headerRow = 0)
         {
             var dict = new Dictionary<string, Dictionary<string, string>>();
 
             var lines = Regex.Split(data.text, LINE_SPLIT_RE);
 
-            if (lines.Length <= 1) 
+            if (lines.Length <= 1)
                 return dict;
 
-            //0줄은 주석, 1줄은 header용으로 사용합니다.
-            var header = Regex.Split(lines[1], SPLIT_RE);
+            var header = Regex.Split(lines[headerRow], SPLIT_RE);
 
-            for (int i = 2; i < lines.Length; i++)
+            for (int i = headerRow+1; i < lines.Length; i++)
             {
                 var values = Regex.Split(lines[i], SPLIT_RE);
-                if (values.Length == 0 || string.IsNullOrWhiteSpace(values[0]) 
-                    || values[0] == "x") //첫 셀이 x 일 경우 해당 줄은 무시합니다.
+                if (values.Length == 0 || string.IsNullOrWhiteSpace(values[0])
+                    || values[0] == "x") //첫 셀의 값이 x 일 경우 해당 줄은 무시합니다.
                     continue;
 
                 var entry = new Dictionary<string, string>();
 
-                //0번째 column은 index
+                //0번째 column은 Key
                 for (int j = 1; j < header.Length && j < values.Length; j++)
                 {
                     string value = values[j];

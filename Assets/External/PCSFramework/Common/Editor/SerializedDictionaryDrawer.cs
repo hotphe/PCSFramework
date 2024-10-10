@@ -176,7 +176,6 @@ namespace PCS.Common.Editor
             if (property.isExpanded)
             {
                 SetupList(property);
-                Debug.Log(_reorderableList.count);
                 height += _reorderableList.GetHeight();
             }
 

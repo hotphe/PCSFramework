@@ -1,4 +1,4 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -66,7 +66,7 @@ namespace PCS.UI
             ScreenResolutionController.OnUpdateDeviceResolution -= Apply;
         }
 
-        public void Apply(Vector2Int deviceResolution)
+        public void Apply(Vector2 deviceResolution)
         {
             if (!_useLocalScreenSize)
                 _referenceScreenSize = deviceResolution;
@@ -79,11 +79,6 @@ namespace PCS.UI
 
             _letterBoxCanavasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             _letterBoxCanavasScaler.referenceResolution = _referenceScreenSize;
-            AspectRatioFitter.AspectMode mode;
-            if (_rootCanvas.rect.size.x == _referenceScreenSize.x)
-                mode = AspectRatioFitter.AspectMode.WidthControlsHeight;
-            else
-                mode = AspectRatioFitter.AspectMode.HeightControlsWidth;
 
             Vector2 minAnchor = Screen.safeArea.min;
             Vector2 maxAnchor = Screen.safeArea.max;
@@ -98,9 +93,17 @@ namespace PCS.UI
             _letterBoxMaskSizer.anchorMin = minAnchor;
             _letterBoxMaskSizer.anchorMax = maxAnchor;
 
+            _mainPanel.offsetMin = Vector2.zero;
+            _mainPanel.offsetMax = Vector2.zero;
+            _mainPanel.localPosition = Vector3.zero;
+
+
             if (_useLetterBox)
             {
-                _holderAspectRatioFitter.aspectMode = mode;
+                if (deviceResolution.x / (float)deviceResolution.y > _referenceRatio)
+                    _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+                else
+                    _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
                 _holderAspectRatioFitter.aspectRatio = _referenceRatio;
                 _holderPanel.sizeDelta = Vector2.zero;
 
@@ -187,10 +190,6 @@ namespace PCS.UI
             _centerPanel.anchorMax = new Vector2(1, 1);
             _centerPanel.offsetMin = midOffsetMin;
             _centerPanel.offsetMax = midOffsetMax;
-
-            _mainPanel.offsetMin = Vector2.zero;
-            _mainPanel.offsetMax = Vector2.zero;
-            _mainPanel.localPosition = Vector3.zero;
         }
         
     }

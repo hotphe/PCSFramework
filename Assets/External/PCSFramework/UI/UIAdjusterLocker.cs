@@ -1,6 +1,7 @@
-﻿using PCS.UI;
+#if UNITY_EDITOR
 using System.Collections;
-using System.Collections.Generic;
+using UnityEditor;
+#endif
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -11,9 +12,9 @@ namespace PCS.UI
     public class UIAdjusterLocker : MonoBehaviour
     {
         [SerializeField] private bool isLock = true;
-        private AspectRatioFitter _ratioFitterBackground;
         private UIAdjuster _uiAdjuster;
-#if UNITY_EDITOR && !PRODUCTION
+
+#if UNITY_EDITOR 
         private void OnValidate()
         {
             InitializeComponents();
@@ -27,14 +28,14 @@ namespace PCS.UI
             if (!isLock)
                 return;
 
-            _uiAdjuster.Apply(new Vector2Int(Screen.width,Screen.height));
+            _uiAdjuster.Apply(new Vector2(Screen.width, Screen.height));
         }
+
         private void InitializeComponents()
         {
             if (_uiAdjuster == null)
                 _uiAdjuster = GetComponent<UIAdjuster>();
         }
-
-    #endif
+#endif
     }
 }

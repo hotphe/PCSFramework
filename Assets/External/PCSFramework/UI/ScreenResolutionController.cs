@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using UnityEngine;
 using PCS.SaveData;
 using PCS.Common;
@@ -15,19 +15,19 @@ namespace PCS.UI
     
     public static class ScreenResolutionController
     {
-        public static event Action<Vector2Int> OnUpdateDeviceResolution;
-        public static Vector2Int DeviceResolution => _deviceResolution ?? (_deviceResolution = GetDeviceResolution()).Value;
+        public static event Action<Vector2> OnUpdateDeviceResolution;
+        public static Vector2 DeviceResolution => _deviceResolution ?? (_deviceResolution = GetDeviceResolution()).Value;
         public static Vector2 ReferenceScreenSize { get; private set; } = new Vector2(1080, 1920);
         public static float ReferenceScreenRatio => ReferenceScreenSize.x / ReferenceScreenSize.y;
 
         private const int LowResolutionHeight = 1280;
         private const int NormalResolutionHeight = 1920;
-        private static Vector2Int? _deviceResolution;
+        private static Vector2? _deviceResolution;
 
-        private static Vector2Int GetDeviceResolution()
+        private static Vector2 GetDeviceResolution()
         {
         #if UNITY_EDITOR
-            return new Vector2Int(Screen.width, Screen.height);
+            return new Vector2(Screen.width, Screen.height);
         #else
             try
             {
@@ -35,7 +35,7 @@ namespace PCS.UI
                 var height = Display.main?.systemHeight ?? 0;
                 if (height <= 0 || width <= 0) return default;
                 if (width > height) return new Vector2Int(height, width);
-                return new Vector2Int(width, height);
+                return new Vector2(width, height);
             }catch(Exception e)
             {
                 Debug.LogError(e);

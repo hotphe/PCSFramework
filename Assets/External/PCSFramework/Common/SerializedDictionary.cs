@@ -45,6 +45,18 @@ namespace PCS.Common
             }
         }
 
+        public SerializedDictionary<TKey,TValue> DeepCopy()
+        {
+            SerializedDictionary<TKey, TValue> dict = new();
+
+            foreach(var kvp in this)
+            {
+                dict.Add(kvp.Key, kvp.Value);
+            }
+
+            return dict;
+        }
+        
         [Serializable]
         public class SerializedKeyValuePair<TKey_, TValue_>
         {

@@ -1,6 +1,7 @@
 using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace PCS.Common
 {
@@ -14,7 +15,7 @@ namespace PCS.Common
         {
             var dict = new Dictionary<string, Dictionary<string, string>>();
 
-            var lines = Regex.Split(data.text, LINE_SPLIT_RE);
+            var lines = Regex.Split(data.text, LINE_SPLIT_RE).Where(s => !string.IsNullOrEmpty(s)).ToArray();
 
             if (lines.Length <= 1)
                 return dict;

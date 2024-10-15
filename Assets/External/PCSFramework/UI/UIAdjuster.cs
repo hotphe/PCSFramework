@@ -1,6 +1,3 @@
-using Cysharp.Threading.Tasks;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using PCS.Common;
@@ -95,8 +92,9 @@ namespace PCS.UI
 
             _mainPanel.offsetMin = Vector2.zero;
             _mainPanel.offsetMax = Vector2.zero;
+            _mainPanel.anchorMin = Vector2.zero;
+            _mainPanel.anchorMax = Vector2.one;
             _mainPanel.localPosition = Vector3.zero;
-
 
             if (_useLetterBox)
             {
@@ -108,7 +106,7 @@ namespace PCS.UI
                 _holderPanel.sizeDelta = Vector2.zero;
 
                 _letterBox.gameObject.SetActive(true);
-                _letterBoxMask.sizeDelta = _mainPanel.rect.size;
+                _letterBoxMask.sizeDelta = _referenceScreenSize;
             }
             else
             {

@@ -1,8 +1,6 @@
-﻿using UnityEngine;
-using System;
+using UnityEngine;
 using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using Cysharp.Threading.Tasks;
 
 namespace PCS.Common
 {
@@ -36,7 +34,17 @@ namespace PCS.Common
                 for (int j = 1; j < header.Length && j < values.Length; j++)
                 {
                     string value = values[j];
-                    value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS).Replace("\\", "");
+                    value = value.TrimStart(TRIM_CHARS).TrimEnd(TRIM_CHARS)
+                        .Replace("\\n", "\n")   // 줄바꿈
+                        .Replace("\\r", "\r")   // 캐리지 리턴
+                        .Replace("\\t", "\t")   // 탭
+                        .Replace("\\\"", "\"")  // 큰따옴표
+                        .Replace("\\'", "'")    // 작은따옴표
+                        .Replace("\\\\", "\\")  // 역슬래시
+                        .Replace("\\b", "\b")   // 백스페이스
+                        .Replace("\\f", "\f")   // 폼 피드
+                        .Replace("\\v", "\v")   // 수직 탭
+                        .Replace("\\0", "\0");  // 널 문자
                     entry[header[j]] = value;
                 }
                 dict[values[0]] = entry;

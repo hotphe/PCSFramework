@@ -34,7 +34,7 @@ namespace PCS.UI
                 var width = Display.main?.systemWidth ?? 0;
                 var height = Display.main?.systemHeight ?? 0;
                 if (height <= 0 || width <= 0) return default;
-                if (width > height) return new Vector2Int(height, width);
+                //if (width > height) return new Vector2(height, width);
                 return new Vector2(width, height);
             }catch(Exception e)
             {

@@ -107,13 +107,12 @@ namespace PCS.Sound
             try
             {
                 await UniTask.WaitUntil(() => !_audioSource.isPlaying, cancellationToken: token);
+                SoundManager.Instance.ReturnToPool(this);
             }
             catch
             {
                 Debug.Log("SoundPlayer is already released.");
             }
-
-            SoundManager.Instance.ReturnToPool(this);
         }
 
         private async UniTaskVoid PlayBGMAsync(CancellationToken token)

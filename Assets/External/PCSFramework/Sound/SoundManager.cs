@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
 using PCS.Common;
 using Cysharp.Threading.Tasks;
@@ -8,17 +8,18 @@ namespace PCS.Sound
 {
     public class SoundManager : MonoSingleton<SoundManager>
     {
-        private SoundConfig _soundConfig;
-
-        IObjectPool<SoundPlayer> _soundPlayerPool;
-        readonly List<SoundPlayer> _activeSoundPlayers = new List<SoundPlayer>();
         public readonly LinkedList<SoundPlayer> FrequentSoundEmitters = new();
 
+        private SoundConfig _soundConfig;
+        private IObjectPool<SoundPlayer> _soundPlayerPool;
+        private readonly List<SoundPlayer> _activeSoundPlayers = new List<SoundPlayer>();
+        private SoundBuilder _bgmBuilder;
         public async UniTask InitializeAsync()
         {
             DontDestroyOnLoad(gameObject);
-
-            _soundConfig = await AddressableManager.LoadAssetAsync<SoundConfig>(typeof(SoundConfig).Name, false);
+            _bgmBuilder = new SoundBuilder(this);
+            //_soundConfig = await AddressableManager.LoadAssetAsync<SoundConfig>(typeof(SoundConfig).Name, false);
+            _soundConfig = (SoundConfig) await Resources.LoadAsync<SoundConfig>(typeof(SoundConfig).Name);
 
             if(_soundConfig == null )
             {
@@ -34,6 +35,7 @@ namespace PCS.Sound
                 _soundConfig.CollectionCheck,
                 _soundConfig.DefaultCapacity,
                 _soundConfig.MaxPoolSize);
+            
         }
 
         public bool CanPlaySound(SoundData data)
@@ -44,7 +46,7 @@ namespace PCS.Sound
             {
                 try
                 {
-                    FrequentSoundEmitters.First.Value.Stop();
+                    FrequentSoundEmitters.First.Value.Releease();
                     return true;
                 }
                 catch
@@ -68,6 +70,8 @@ namespace PCS.Sound
         {
             return _soundPlayerPool.Get();
         }
+
+        public SoundBuilder GetBGMBuilder() => _bgmBuilder;
 
         public void ReturnToPool(SoundPlayer player)
         {
@@ -103,8 +107,5 @@ namespace PCS.Sound
         {
             Destroy(player.gameObject);
         }
-
-
-
     }
 }

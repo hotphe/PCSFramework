@@ -31,11 +31,6 @@ namespace PCS.DI
             _scope = scope;
         }
 
-        public void SetScope(LifecycleScope scope)
-        {
-            _scope = scope;
-        }
-
         public void Regist(IEnumerable<IDependencyProvider> providers)
         {
             foreach (var provider in providers)
@@ -66,6 +61,10 @@ namespace PCS.DI
             {
                 if (!Attribute.IsDefined(method, typeof(ProvideAttribute))) continue;
 
+                var provideAttribute = method.GetCustomAttribute<ProvideAttribute>();
+
+                if (provideAttribute.Scope != _scope) continue;
+
                 var returnType = method.ReturnType;
                 var providedInstance = method.Invoke(provider, null);
                 if (providedInstance != null)
@@ -76,6 +75,7 @@ namespace PCS.DI
                         continue;
                     }
                     registry.Add(returnType, providedInstance);
+                    if (EnvProperties.IsDebugMode) Debug.Log($"{returnType} type is Registered.");
                 }
                 else
                     throw new Exception($"Provider {method.Name} return null into {provider.GetType().Name}");

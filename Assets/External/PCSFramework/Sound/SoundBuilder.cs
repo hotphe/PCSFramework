@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -9,6 +9,9 @@ namespace PCS.Sound
         private readonly SoundManager _soundManager;
         private Vector3 _position = Vector3.zero;
         private bool _randomPitch = false;
+
+        private string _currentSound = string.Empty;
+        private SoundPlayer _currentSoundPlayer;
 
         public SoundBuilder(SoundManager soundManager)
         {
@@ -55,7 +58,35 @@ namespace PCS.Sound
                 soundPlayer.Node = _soundManager.FrequentSoundEmitters.AddLast(soundPlayer);
             }
 
-            soundPlayer.Play();
+            soundPlayer.PlaySFX();
+        }
+
+        public void PlayBGM(string name)
+        {
+            if (_currentSound.Equals(name))
+                return;
+
+            _currentSound = name;
+            SoundData data = _soundManager.TryGetSoundData(name);
+
+            if (data == null)
+            {
+                Debug.Log($"Data({name}) is null.");
+                return;
+            }
+
+            if (!_soundManager.CanPlaySound(data))
+                return;
+            if(_currentSoundPlayer == null)
+                _currentSoundPlayer = _soundManager.Get();
+            else
+                _currentSoundPlayer.Stop();
+
+            _currentSoundPlayer.Initialize(data);
+            _currentSoundPlayer.transform.position = _position;
+            _currentSoundPlayer.transform.parent = _soundManager.transform;
+
+            _currentSoundPlayer.PlayBGM();
         }
 
     }

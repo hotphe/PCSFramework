@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Threading;
 using System;
 using System.Collections.Generic;
+using Cysharp.Threading.Tasks.CompilerServices;
 
 namespace PCS.Sound
 {
@@ -53,7 +54,7 @@ namespace PCS.Sound
             
         }
 
-        public void Play()
+        public void PlaySFX()
         {
             if (cts != null)
             {
@@ -62,7 +63,25 @@ namespace PCS.Sound
             }
 
             cts = new CancellationTokenSource();
-            PlaySound(cts.Token).Forget();
+            PlaySFXAsync(cts.Token).Forget();
+        }
+
+        public void PlayBGM()
+        {
+            if (cts != null)
+            {
+                cts.Cancel();
+                cts.Dispose();
+            }
+
+            cts = new CancellationTokenSource();
+            PlayBGMAsync(cts.Token).Forget();
+        }
+
+        public void Releease()
+        {
+            Stop();
+            SoundManager.Instance.ReturnToPool(this);
         }
 
         public void Stop()
@@ -74,7 +93,6 @@ namespace PCS.Sound
                 cts = null;
             }
             _audioSource.Stop();
-            SoundManager.Instance.ReturnToPool(this);
         }
 
         public void WithRandomPitch(float min = -0.05f, float max = 0.05f)
@@ -82,7 +100,7 @@ namespace PCS.Sound
             _audioSource.pitch += UnityEngine.Random.Range(min, max);
         }
 
-        private async UniTaskVoid PlaySound(CancellationToken token)
+        private async UniTaskVoid PlaySFXAsync(CancellationToken token)
         {
             _audioSource.Play();
 
@@ -98,5 +116,18 @@ namespace PCS.Sound
             SoundManager.Instance.ReturnToPool(this);
         }
 
+        private async UniTaskVoid PlayBGMAsync(CancellationToken token)
+        {
+            _audioSource.Play();
+
+            try
+            {
+                await UniTask.WaitUntil(() => !_audioSource.isPlaying, cancellationToken: token);
+            }
+            catch
+            {
+                
+            }
+        }
     }
 }

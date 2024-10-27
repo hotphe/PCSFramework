@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using PCS.SaveData;
 using PCS.Common;
+using Cysharp.Threading.Tasks;
 
 namespace PCS.UI
 {
@@ -26,23 +27,33 @@ namespace PCS.UI
 
         private static Vector2 GetDeviceResolution()
         {
-        #if UNITY_EDITOR
-            return new Vector2(Screen.width, Screen.height);
-        #else
+            if (OptionSaveData.Instance.Resolution != Vector2Int.zero)
+            {
+                return OptionSaveData.Instance.Resolution;
+            }
+            else
+            {
+#if UNITY_EDITOR
+                OptionSaveData.Instance.Resolution = new Vector2Int(Screen.width, Screen.height);
+                OptionSaveData.Instance.Save();
+                return new Vector2(Screen.width, Screen.height);
+#else
             try
             {
                 var width = Display.main?.systemWidth ?? 0;
                 var height = Display.main?.systemHeight ?? 0;
                 if (height <= 0 || width <= 0) return default;
                 //if (width > height) return new Vector2(height, width);
+                OptionSaveData.Instance.Resolution = new Vector2Int(width,height);
+                OptionSaveData.Instance.Save();
                 return new Vector2(width, height);
             }catch(Exception e)
             {
                 Debug.LogError(e);
                 return default;
             }
-                
-        #endif
+#endif
+            }
         }
 
         public static void Initialize()
@@ -71,11 +82,14 @@ namespace PCS.UI
 
         public static void CheckUpdateDeviceResolution()
         {
+#if UNITY_ANDROID || UNITY_IOS
             var currentResolution = GetDeviceResolution();
             if (currentResolution == DeviceResolution) return;
             _deviceResolution = currentResolution;
-            Debug.Log("Size Changed");
             OnUpdateDeviceResolution?.Invoke(DeviceResolution);
+#elif UNITY_STANDALONE_WIN || UNITY_STANDALONE_OSX || UNITY_STANDALONE_LINUX
+            OnUpdateDeviceResolution?.Invoke(DeviceResolution);
+#endif
         }
 
         public static void UpdateResolution(QualityType qType)
@@ -95,6 +109,15 @@ namespace PCS.UI
             UpdateResolutionByHeight(resolutionHeight);
         }
 
+        public static void UpdateResolution(Vector2Int resolution)
+        {
+            _deviceResolution = resolution;
+            OptionSaveData.Instance.Resolution = resolution;
+            OptionSaveData.Instance.Save();
+            Screen.SetResolution(resolution.x, resolution.y, OptionSaveData.Instance.IsFullScreen);
+            OnUpdateDeviceResolution?.Invoke(resolution);
+        }
+
         /// <summary>
         /// Height 기준으로 해상도 업데이트
         /// </summary>
@@ -108,8 +131,10 @@ namespace PCS.UI
             var aspectRatio = (float)width / height;
             var newWidth = aspectRatio * newHeight;
 
-            if (EnvProperties.IsDebugMode) Debug.Log($"UpdateResloution : Default({width},{height} to NewResolution({newWidth},{newHeight})");
-
+            if (EnvProperties.IsDebugMode) 
+                Debug.Log($"UpdateResloution : Default({width},{height} to NewResolution({newWidth},{newHeight})");
+            
+            //Not work in Editor, Mobile
             Screen.SetResolution((int)newWidth, (int)newHeight, OptionSaveData.Instance.IsFullScreen);
         }
 

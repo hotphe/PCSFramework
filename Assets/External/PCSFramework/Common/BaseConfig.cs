@@ -15,8 +15,8 @@ namespace PCS.Common
         public string SaveDataCryptoKey = "RGVmZW5zZUFsb25lRGF0YQ==";
         
         
-        [Header("PCS.Network")]
-        public Network.HmacConfig NetworkConfig;
+        //[Header("PCS.Network")]
+        //public Network.HmacConfig NetworkConfig;
 
         private static BaseConfig instance;
 

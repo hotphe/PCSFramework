@@ -7,7 +7,7 @@ namespace PCS.UI
     public class UIAdjuster : MonoBehaviour
     {
         [SerializeField] private bool _useLocalScreenSize = false;
-        [Condition("_useLocalScreenSize", true)][SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
+        [Condition(nameof(_useLocalScreenSize), true)][SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
         
         [SerializeField] private bool _useLetterBox = false;
 
@@ -34,20 +34,20 @@ namespace PCS.UI
 
         [Fold("Constants")]
         [SerializeField] private bool _useConstantTop;
-        [Condition("_useConstantTop", true)][SerializeField] private float _topHeight;
-        [Condition("_useConstantTop", true)][SerializeField] private int _topPriority;
+        [Condition(nameof(_useConstantTop), true)][SerializeField] private float _topHeight;
+        [Condition(nameof(_useConstantTop), true)][SerializeField] private int _topPriority;
 
         [SerializeField] private bool _useConstantBottom;
-        [Condition("_useConstantBottom", true)][SerializeField] private float _bottomHeight;
-        [Condition("_useConstantBottom", true)][SerializeField] private int _bottomPriority;
+        [Condition(nameof(_useConstantBottom), true)][SerializeField] private float _bottomHeight;
+        [Condition(nameof(_useConstantBottom), true)][SerializeField] private int _bottomPriority;
 
         [SerializeField] private bool _useConstantLeft;
-        [Condition("_useConstantLeft", true)][SerializeField] private float _leftWidth;
-        [Condition("_useConstantLeft", true)][SerializeField] private int _leftPriority;
+        [Condition(nameof(_useConstantLeft), true)][SerializeField] private float _leftWidth;
+        [Condition(nameof(_useConstantLeft), true)][SerializeField] private int _leftPriority;
 
         [SerializeField] private bool _useConstantRight;
-        [Condition("_useConstantRight", true)][SerializeField] private float _rightWidth;
-        [Condition("_useConstantRight", true)][SerializeField] private int _rightPriority;
+        [Condition(nameof(_useConstantRight), true)][SerializeField] private float _rightWidth;
+        [Condition(nameof(_useConstantRight), true)][SerializeField] private int _rightPriority;
         [EndFold]
 
         private float _referenceRatio => _referenceScreenSize.x / _referenceScreenSize.y;
@@ -98,11 +98,12 @@ namespace PCS.UI
 
             if (_useLetterBox)
             {
-                if (deviceResolution.x / (float)deviceResolution.y > _referenceRatio)
-                    _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
-                else
+                if(Mathf.Approximately(_rootCanvas.rect.size.x, deviceResolution.x))
                     _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.WidthControlsHeight;
-                _holderAspectRatioFitter.aspectRatio = _referenceRatio;
+                else
+                    _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
+
+                _holderAspectRatioFitter.aspectRatio = deviceResolution.x/(float)deviceResolution.y;
                 _holderPanel.sizeDelta = Vector2.zero;
 
                 _letterBox.gameObject.SetActive(true);

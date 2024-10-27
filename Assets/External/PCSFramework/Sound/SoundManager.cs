@@ -1,25 +1,25 @@
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using PCS.Common;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Pool;
-
+using PCS.SaveData;
 namespace PCS.Sound
 {
     public class SoundManager : MonoSingleton<SoundManager>
     {
         public readonly LinkedList<SoundPlayer> FrequentSoundEmitters = new();
-
         private SoundConfig _soundConfig;
+
         private IObjectPool<SoundPlayer> _soundPlayerPool;
         private readonly List<SoundPlayer> _activeSoundPlayers = new List<SoundPlayer>();
         private SoundBuilder _bgmBuilder;
+
         public async UniTask InitializeAsync()
         {
             DontDestroyOnLoad(gameObject);
             _bgmBuilder = new SoundBuilder(this);
-            //_soundConfig = await AddressableManager.LoadAssetAsync<SoundConfig>(typeof(SoundConfig).Name, false);
-            _soundConfig = (SoundConfig) await Resources.LoadAsync<SoundConfig>(typeof(SoundConfig).Name);
+            _soundConfig = await AddressableManager.LoadAssetAsync<SoundConfig>(typeof(SoundConfig).Name, false);
 
             if(_soundConfig == null )
             {
@@ -35,7 +35,33 @@ namespace PCS.Sound
                 _soundConfig.CollectionCheck,
                 _soundConfig.DefaultCapacity,
                 _soundConfig.MaxPoolSize);
+
+            SetMasterVolume(OptionSaveData.Instance.MasterVolume);
+            SetBGMVolume(OptionSaveData.Instance.BGMVolume);
+            SetSFXVolume(OptionSaveData.Instance.SFXVolume);
             
+        }
+        private float ConvertToDecibel(float value)
+        {
+            if (value <= 0) return -80f;
+            return Mathf.Log10(value) * 20f;
+        }
+
+        public void SetMasterVolume(float volume)
+        {
+            _soundConfig.BaseAudioMixer.SetFloat("Master", ConvertToDecibel(volume));
+        }
+
+        // BGM 볼륨 조절
+        public void SetBGMVolume(float volume)
+        {
+            _soundConfig.BaseAudioMixer.SetFloat("BGM", ConvertToDecibel(volume));
+        }
+
+        // SFX 볼륨 조절
+        public void SetSFXVolume(float volume)
+        {
+            _soundConfig.BaseAudioMixer.SetFloat("SFX", ConvertToDecibel(volume));
         }
 
         public bool CanPlaySound(SoundData data)
@@ -46,7 +72,7 @@ namespace PCS.Sound
             {
                 try
                 {
-                    FrequentSoundEmitters.First.Value.Releease();
+                    FrequentSoundEmitters.First.Value.Stop();
                     return true;
                 }
                 catch
@@ -60,8 +86,10 @@ namespace PCS.Sound
 
         public SoundData TryGetSoundData(string name)
         {
-            _soundConfig.SoundDataDictionary.TryGetValue(name, out var soundData);
-            return soundData;
+            if(_soundConfig.SoundDataDictionary.TryGetValue(name, out var soundData))
+                return soundData;
+            Debug.Log($"{name} dose not exist.");
+            return null;
         }
 
         public SoundBuilder CreateSoundBuilder() => new SoundBuilder(this);
@@ -101,11 +129,14 @@ namespace PCS.Sound
         {
             player.gameObject.SetActive(false);
             _activeSoundPlayers.Remove(player);
-        }
+            }
 
         private void OnDestroyPoolObject(SoundPlayer player)
         {
             Destroy(player.gameObject);
         }
+
+
+
     }
 }

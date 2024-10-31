@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using PCS.Scene;
 namespace PCS.DI
 {
@@ -7,13 +7,13 @@ namespace PCS.DI
         protected override LifecycleScope _scope => LifecycleScope.Project;
         protected override void Awake()
         {
-            SceneManager.AfterSceneLoaded += OnSceneLoaded;
+            SceneManager.Instance.AfterSceneLoaded += OnSceneLoaded;
             base.Awake();
         }
 
         protected virtual void OnDestroy()
         {
-            SceneManager.AfterSceneLoaded -= OnSceneLoaded;
+            SceneManager.Instance.AfterSceneLoaded -= OnSceneLoaded;
         }
     }
 }

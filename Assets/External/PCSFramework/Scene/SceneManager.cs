@@ -15,9 +15,9 @@ namespace PCS.Scene
 {
     public class SceneManager : MonoSingleton<SceneManager>
     {
-        public event Action BeforeSceneLoaded;
-        public event Action AfterSceneLoaded;
-        public event Action SceneLoadComplete;
+        public static event Action BeforeSceneLoaded;
+        public static event Action AfterSceneLoaded;
+        public static event Action SceneLoadComplete;
         public bool IsLoading { get; private set; }
 
         private SceneConfig _sceneConfig;
@@ -51,6 +51,8 @@ namespace PCS.Scene
                 return;
             }
 
+            await LoadEssentialScene();
+
             Debug.Log("SceneManager initialized");
 
 #if UNITY_EDITOR
@@ -82,7 +84,7 @@ namespace PCS.Scene
 #endif
         }
 
-        public async UniTask LoadEssentialScene()
+        private async UniTask LoadEssentialScene()
         {
             var operationGroup = new AsyncOperationGroup();
             var handleGruop = new AsyncOperationHandleGroup();
@@ -99,6 +101,7 @@ namespace PCS.Scene
             while (!operationGroup.IsDone || !handleGruop.IsDone)
                 await UniTask.Delay(10);
 
+            Debug.Log("EssentialScenes Loaded");
         }
 
         public async UniTask LoadSceneAsync<T>(Func<T, UniTask> initializer = null) where T : MonoBehaviour, IPresenterBase

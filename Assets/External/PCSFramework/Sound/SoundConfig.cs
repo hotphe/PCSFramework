@@ -8,6 +8,7 @@ namespace PCS.Sound
     [CreateAssetMenu(fileName = "SoundConfig", menuName = "Config/SoundConfig")]
     public class SoundConfig : ScriptableObject
     {
+        public AudioMixer BaseAudioMixer;
         public SoundPlayer SoundPlayerPrefab;
         public bool CollectionCheck = true;
         public int DefaultCapacity = 10;

@@ -5,6 +5,7 @@ using PCS.UI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UniRx;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
@@ -18,12 +19,13 @@ namespace PCS.Scene
         public static event Action BeforeSceneLoaded;
         public static event Action AfterSceneLoaded;
         public static event Action SceneLoadComplete;
-        public bool IsLoading { get; private set; }
 
         private SceneConfig _sceneConfig;
         private SceneGroup _currentSceneGroup;
+        private UnityEngine.SceneManagement.Scene _currentActiveScene;
         private List<string> _loadedScene = new List<string>();
 
+        public bool IsLoading { get; private set; }
 
         private string[] excludes = new string[] { "Scene", "Presenter", "Installer","Model" };
 
@@ -40,11 +42,10 @@ namespace PCS.Scene
                 Debug.LogError($"Failed to load SceneConfig. Check Internet Connection or the server status.");
                 return;
             }
-
+            _currentActiveScene = UnityEngine.SceneManagement.SceneManager.GetActiveScene();
             string sceneName = UnityEngine.SceneManagement.SceneManager.GetActiveScene().name;
-
+            
             _currentSceneGroup = _sceneConfig.LoadSceneGroups.FirstOrDefault(x => x.GroupName.Equals(sceneName));
-
             if (_currentSceneGroup == null)
             {
                 Debug.LogError($"Current Scene ({sceneName}) does not in SceneConfig.");
@@ -101,7 +102,6 @@ namespace PCS.Scene
             while (!operationGroup.IsDone || !handleGruop.IsDone)
                 await UniTask.Delay(10);
 
-            Debug.Log("EssentialScenes Loaded");
         }
 
         public async UniTask LoadSceneAsync<T>(Func<T, UniTask> initializer = null) where T : MonoBehaviour, IPresenterBase
@@ -130,13 +130,6 @@ namespace PCS.Scene
             SceneReference activeScene = group.ActiveScene;
             List<SceneReference> additives = group.AdditiveScenes;
 
-            //Load Additive Scenes
-            foreach (var additive in additives)
-            {
-                if (additive.State != SceneReferenceState.Unsafe)
-                    SetOperations(additive, LoadSceneMode.Additive, operationGroup, handleGruop);
-            }
-
             //Load Active Scene
             if (activeScene.State != SceneReferenceState.Unsafe)
                 SetOperations(activeScene, LoadSceneMode.Additive, operationGroup, handleGruop);
@@ -146,9 +139,21 @@ namespace PCS.Scene
 
             await UnloadSceneAsync();
 
-            
             if (activeScene.State != SceneReferenceState.Unsafe)
+            {
                 UnityEngine.SceneManagement.SceneManager.SetActiveScene(activeScene.LoadedScene);
+                _currentActiveScene = activeScene.LoadedScene;
+            }
+
+            //Load Additive Scenes
+            foreach (var additive in additives)
+            {
+                if (additive.State != SceneReferenceState.Unsafe)
+                    SetOperations(additive, LoadSceneMode.Additive, operationGroup, handleGruop);
+            }
+
+            while (!operationGroup.IsDone || !handleGruop.IsDone)
+                await UniTask.Delay(100);
 
             AfterSceneLoaded?.Invoke();
 
@@ -178,11 +183,16 @@ namespace PCS.Scene
                 return;
             }
 
-            if(_currentSceneGroup.ActiveScene.State != SceneReferenceState.Unsafe)
-                await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_currentSceneGroup.ActiveScene.Path);
+            if (_currentSceneGroup.ActiveScene.State != SceneReferenceState.Unsafe 
+                && _currentSceneGroup.ActiveScene.LoadedScene == _currentActiveScene)
+            {
+                await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_currentActiveScene);
+            }
 
             foreach (var scene in _currentSceneGroup.AdditiveScenes)
             {
+                if (!scene.LoadedScene.isLoaded)
+                    continue;
                 if(scene.State != SceneReferenceState.Unsafe)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene.Path);
             }

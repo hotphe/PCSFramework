@@ -21,8 +21,9 @@ namespace PCS.DI.Core
 
 #if PCS_SceneManagement
         internal static Dictionary<string, List<string>> SceneContainerHierarchy { get; } = new();
+        internal static bool UseAutoContainerHierarch = false;
 #endif
-        internal static Dictionary<Scene, Container> SceneContainerParentOverride { get; } = new();
+        internal static Dictionary<string, Container> SceneContainerParentOverride { get; } = new();
         internal static Dictionary<Scene, Action<ContainerBuilder>> ScenePreInstaller { get; } = new();
 
         //[RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.BeforeSceneLoad)]
@@ -37,6 +38,12 @@ namespace PCS.DI.Core
                 var sceneContainer = CreateSceneContainer(scene, ProjectContainer, sceneScope);
                 ContainersPerScene.Add(scene, sceneContainer);
                 SceneInjector.Inject(scene, sceneContainer);
+#if PCS_SceneManagement
+                if (!SceneContainerHierarchy.TryGetValue(scene.name, out var additiveScenes))
+                    return;
+                foreach (var additive in additiveScenes)
+                    SceneContainerParentOverride[additive] = sceneContainer;
+#endif
             }
 
             void DisposeScene(Scene scene)
@@ -67,10 +74,10 @@ namespace PCS.DI.Core
 
         private static Container CreateSceneContainer(Scene scene, Container projectContainer, SceneScope sceneScope)
         {
-            var sceneParentContainer = SceneContainerParentOverride.Remove(scene, out var container)
+            var sceneParentContainer = SceneContainerParentOverride.Remove(scene.name, out var container)
                 ? container
                 : projectContainer;
-
+            
             return sceneParentContainer.Scope(builder =>
             {
                 builder.SetName($"{scene.name} ({scene.GetHashCode()})");
@@ -91,7 +98,7 @@ namespace PCS.DI.Core
 
             if (hierarchySO == null)
                 return;
-
+            UseAutoContainerHierarch = hierarchySO.UseAutoContainerHierarchy;
             foreach (var sceneGroup in hierarchySO.Hierarchy)
             {
                 SceneContainerHierarchy[sceneGroup.ActiveSceneName] = sceneGroup.AdditiveSceneNames;

@@ -1,9 +1,13 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using UnityEngine;
-using PCS.Common;
 using Cysharp.Threading.Tasks;
 using UnityEngine.Pool;
+using PCS.Common;
 using PCS.SaveData;
+#if PCS_Addressable
+using PCS.Addressable;
+#endif
+
 namespace PCS.Sound
 {
     public class SoundManager : MonoSingleton<SoundManager>
@@ -19,9 +23,12 @@ namespace PCS.Sound
         {
             DontDestroyOnLoad(gameObject);
             _bgmBuilder = new SoundBuilder(this);
+#if PCS_Addressable
             _soundConfig = await AddressableManager.LoadAssetAsync<SoundConfig>(typeof(SoundConfig).Name, false);
-
-            if(_soundConfig == null )
+#else
+            _soundConfig = (SoundConfig)await Resources.LoadAsync<SoundConfig>(typeof(SoundConfig).Name);
+#endif
+            if (_soundConfig == null )
             {
                 Debug.LogError($"There is no {typeof(SoundConfig).Name} asset in addressables.");
                 return;

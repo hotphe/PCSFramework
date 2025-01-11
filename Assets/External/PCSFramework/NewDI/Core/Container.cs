@@ -5,6 +5,7 @@ using PCS.DI.Extension;
 using System;
 using System.Linq;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace PCS.DI.Core
 {
@@ -55,13 +56,16 @@ namespace PCS.DI.Core
         }
         private IEnumerable<IObjectResolver> GetResolvers(Type contract)
         {
-
-
             if (ResolversByContract.TryGetValue(contract, out var resolvers))
             {
                 return resolvers;
             }
 
+            Debug.Log(contract.Name + " / " + Name);
+            foreach(var resolver in ResolversByContract)
+            {
+                Debug.Log(resolver.Key);    
+            }
             throw new Exception($"{contract} type is not binded.");
         }
 

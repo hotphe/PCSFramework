@@ -10,7 +10,11 @@ namespace PCS.SceneManagement
         }
         public static void ToMyScene2()
         {
-            //SceneManager.Instance.LoadSceneAsync<MyScene2Presenter>(scene => scene.InitializeAsync(2)).Forget();
+            SceneManager.Instance.LoadSceneAsync<MyScene2Presenter>(scene => scene.InitializeAsync(2)).Forget();
+        }
+        public static void ToMyScene1()
+        {
+            SceneManager.Instance.LoadSceneAsync<MyScene1Presenter>(scene => scene.InitializeAsync(2)).Forget();
         }
     }
 }

@@ -1,17 +1,21 @@
 using Cysharp.Threading.Tasks;
 using System.Collections.Generic;
-using PCS.SaveData;
 using UnityEngine;
 using System;
+using PCS.SaveData;
+#if PCS_Addressables
+using PCS.Addressable;
+#endif
 
 namespace PCS.Common
 {
     public static class LanguageManager
     {
-        //º¯º≠¥Î∑Œ index, header, value
+        //index, header, value
         private static Dictionary<string,Dictionary<string, string>> languages;
 
         private const string LANGUAGE = "Language_";
+        private const string FILE_NAME = "StringTable";
 
         public static async UniTask InitializeAsync()
         {
@@ -20,11 +24,17 @@ namespace PCS.Common
 
         public static async UniTask LoadLanguageAsync(string country)
         {
-            string fileName = string.Concat(LANGUAGE, country);
+            //Ïñ∏Ïñ¥Î≥Ñ ÏÑúÎ°ú Îã§Î•∏ ÌååÏùº ÏÇ¨Ïö©Ïãú
+            //string fileName = string.Concat(LANGUAGE, country);
+            string fileName = FILE_NAME;
             TextAsset asset;
             try
             {
+#if PCS_Addressable
                 asset = await AddressableManager.LoadAssetAsync<TextAsset>(fileName, false);
+#else
+                asset = (TextAsset)await Resources.LoadAsync<TextAsset>(fileName);
+#endif
             } catch (Exception e)
             {
                 Debug.LogError($"Failed to load asset : {country} , Error : {e.Message}");

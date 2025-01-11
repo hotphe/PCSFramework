@@ -36,8 +36,8 @@ namespace PCS.SaveData
         public bool IsExist => PlayerPrefs.HasKey(SaveDataKey);
 
         /// <summary>
-        /// Å¬·¡½º ÀÚÃ¼¸¦ ºÒ·¯¿È. 
-        /// Å¬·¡½ºÀÇ static¿¡¼­ _instance = Load() Çü½ÄÀ¸·Î »ç¿ëÇÏ¹Ç·Î ÇÊ¿ä µ¥ÀÌÅÍ ¹× ¸Ş¼Òµå°¡ static.
+        /// í´ë˜ìŠ¤ ìì²´ë¥¼ ë¶ˆëŸ¬ì˜´. 
+        /// í´ë˜ìŠ¤ì˜ staticì—ì„œ _instance = Load() í˜•ì‹ìœ¼ë¡œ ì‚¬ìš©í•˜ë¯€ë¡œ í•„ìš” ë°ì´í„° ë° ë©”ì†Œë“œê°€ static.
         /// </summary>
         /// <returns></returns>
         public static T Load()
@@ -46,13 +46,13 @@ namespace PCS.SaveData
 
             if (string.IsNullOrEmpty(data))
                 return new T();
-            
+
             var converted = Convert.FromBase64String(data);
             var decrypted = SaveDataManager.Cipher.Decrypt(converted);
             return SaveDataManager.Serializer.Deserialize<T>(decrypted);
         }
         /// <summary>
-        /// Å¬·¡½º¸¦ »ı¼ºÇÏ°í Save¸¦ ÇÏ¹Ç·Î non static
+        /// í´ë˜ìŠ¤ë¥¼ ìƒì„±í•˜ê³  Saveë¥¼ í•˜ë¯€ë¡œ non static
         /// </summary>
         public void Save()
         {
@@ -63,7 +63,7 @@ namespace PCS.SaveData
             PlayerPrefs.Save();
         }
         /// <summary>
-        /// Áö¿ì´Â ±â´ÉÀÇ °æ¿ì Å¬·¡½ºÀÇ »ı¼ºÀÌ ÇÊ¿ä¾øÀ» ¼ö ÀÖÀ¸¹Ç·Î static.
+        /// ì§€ìš°ëŠ” ê¸°ëŠ¥ì˜ ê²½ìš° í´ë˜ìŠ¤ì˜ ìƒì„±ì´ í•„ìš”ì—†ì„ ìˆ˜ ìˆìœ¼ë¯€ë¡œ static.
         /// </summary>
         public static void Delete()
         {
@@ -72,7 +72,7 @@ namespace PCS.SaveData
         }
 
         /// <summary>
-        /// ¼¼ÀÌºê µ¥ÀÌÅÍ¸¦ ±âÁ¸À¸·Î µÇµ¹¸².
+        /// ì„¸ì´ë¸Œ ë°ì´í„°ë¥¼ ê¸°ì¡´ìœ¼ë¡œ ë˜ëŒë¦¼.
         /// </summary>
         /// <returns></returns>
         public static T Revert()

@@ -1,9 +1,4 @@
-#if UNITY_EDITOR
-using System.Collections;
-using UnityEditor;
-#endif
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace PCS.UI
 {

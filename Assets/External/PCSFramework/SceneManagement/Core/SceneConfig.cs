@@ -12,6 +12,7 @@ namespace PCS.SceneManagement
         public const string FileName = "SceneConfig";
         public string StartSceneName;
 #if PCS_DI
+        [Tooltip("If you use PCS.DI framework, ")]
         public bool UseAutoContainerHierarchy;
 #endif
         public bool UseLoadingScene;

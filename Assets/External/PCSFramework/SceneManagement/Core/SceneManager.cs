@@ -131,10 +131,14 @@ namespace PCS.SceneManagement
 
             //Load Active Scene
             if (activeScene.State != SceneReferenceState.Unsafe)
-                await LoadActiveScene(activeScene, LoadSceneMode.Additive);
+//                await LoadActiveScene(activeScene, LoadSceneMode.Additive);
+                await Addressables.LoadSceneAsync(activeScene.Path, LoadSceneMode.Additive);
 
             if (!_sceneConfig.UseLoadingScene)
                 await UnloadSceneAsync();
+
+            _currentActiveScene = activeScene.LoadedScene;
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(_currentActiveScene);
 
             var operationGroup = new AsyncOperationGroup();
             var handleGruop = new AsyncOperationHandleGroup();
@@ -173,29 +177,6 @@ namespace PCS.SceneManagement
             IsLoading = false;
             SceneLoadComplete?.Invoke();
         }
-
-        private async UniTask LoadActiveScene(SceneReference activeScene, LoadSceneMode mode)
-        {
-            AsyncOperationHandle asyncOperationHandle = Addressables.LoadSceneAsync(activeScene.Path, mode);
-            await ToUniTask(asyncOperationHandle, activeScene.Name);
-            Scene loaded = UnityEngine.SceneManagement.SceneManager.GetSceneByName(activeScene.Name);
-            UnityEngine.SceneManagement.SceneManager.SetActiveScene(loaded);
-        }
-
-        private UniTask ToUniTask(AsyncOperationHandle handle, string sceneName)
-        {
-            var tcs = new UniTaskCompletionSource();
-            handle.Completed += (op) =>
-            {
-                if (op.Status == AsyncOperationStatus.Succeeded)
-                    tcs.TrySetResult();
-                else
-                    tcs.TrySetException(new Exception($"Failed to load {sceneName} scene."));
-            };
-
-            return tcs.Task;
-        }
-
 
         private void SetOperations(SceneReference scene, LoadSceneMode mode, AsyncOperationGroup operationGroup, AsyncOperationHandleGroup handleGroup)
         {
@@ -244,7 +225,7 @@ namespace PCS.SceneManagement
             }
 
             while (!operationGroup.IsDone)
-                await UniTask.Delay(10);
+                await UniTask.Yield();
         }
 
         public async UniTask LoadSceneAsync<T>(Func<T, UniTask> initializer = null) where T : MonoBehaviour, IPresenterBase
@@ -273,10 +254,12 @@ namespace PCS.SceneManagement
 
             //Load Active Scene
             if (activeScene.State != SceneReferenceState.Unsafe)
-                await LoadActiveScene(activeScene, LoadSceneMode.Additive);
-
+                await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(activeScene.Path, LoadSceneMode.Additive);
             if (!_sceneConfig.UseLoadingScene)
                 await UnloadSceneAsync();
+
+            _currentActiveScene = activeScene.LoadedScene;
+            UnityEngine.SceneManagement.SceneManager.SetActiveScene(_currentActiveScene);
 
             var operationGroup = new AsyncOperationGroup();
 
@@ -288,7 +271,7 @@ namespace PCS.SceneManagement
             }
 
             while (!operationGroup.IsDone)
-                await UniTask.Delay(100);
+                await UniTask.Yield();
 
             if (_sceneConfig.UseLoadingScene && _sceneConfig.LoadingScene != null)
             {
@@ -308,7 +291,7 @@ namespace PCS.SceneManagement
                 }
                 catch (Exception e)
                 {
-                    Debug.LogError($"There is no PresenterBase in {CurrentActiveSceneName} Scene. \n message:{e}");
+                    Debug.LogError($"There is no PresenterBase in {activeScene.Name} Scene. \n message:{e}");
                     
                 }
             }
@@ -316,21 +299,6 @@ namespace PCS.SceneManagement
             await UniTask.Delay(MIN_LOADING_TIME);
             IsLoading = false;
             SceneLoadComplete?.Invoke();
-        }
-
-        private async UniTask LoadActiveScene(SceneReference activeScene,LoadSceneMode mode)
-        {
-            AsyncOperation asyncOperation = UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(activeScene.Path, mode);
-            await ToUniTask(asyncOperation);
-            Scene loaded = UnityEngine.SceneManagement.SceneManager.GetSceneByName(activeScene.Name);
-            UnityEngine.SceneManagement.SceneManager.SetActiveScene(loaded);
-        }
-
-        private UniTask ToUniTask(AsyncOperation asyncOperation)
-        {
-            var tcs = new UniTaskCompletionSource();
-            asyncOperation.completed += (op) => tcs.TrySetResult();
-            return tcs.Task;
         }
 
         private void SetOperations(SceneReference scene,LoadSceneMode mode, AsyncOperationGroup operationGroup)
@@ -351,18 +319,20 @@ namespace PCS.SceneManagement
                 Debug.LogError($"There is no scene name of {PastActiveSceneName}");
                 return;
             }
-            if (pastActiveScene.State != SceneReferenceState.Unsafe
-                && pastActiveScene.LoadedScene == _pastActiveScene)
-            {
-                await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_pastActiveScene);
-            }
 
+            //For the DIContainer in PCS.DI , additive scenes are unloaded first.
             foreach (var scene in pastAdditives)
             {
                 if (!scene.LoadedScene.isLoaded)
                     continue;
                 if (scene.State != SceneReferenceState.Unsafe)
                     await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(scene.Path);
+            }
+
+            if (pastActiveScene.State != SceneReferenceState.Unsafe
+                && pastActiveScene.LoadedScene == _pastActiveScene)
+            {
+                await UnityEngine.SceneManagement.SceneManager.UnloadSceneAsync(_pastActiveScene);
             }
         }
 

@@ -1,7 +1,10 @@
-﻿using Cysharp.Threading.Tasks;
+using Cysharp.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.U2D;
 using PCS.UI;
+#if PCS_Addressable
+using PCS.Addressable;
+#endif
 
 namespace PCS.Common
 {
@@ -12,7 +15,12 @@ namespace PCS.Common
         public async UniTask InitializeAsync()
         {
             DontDestroyOnLoad(gameObject);
+#if PCS_Addressable
             _atlasConfig = await AddressableManager.LoadAssetAsync<AtlasConfig>(typeof(AtlasConfig).Name,false);
+#else
+            _atlasConfig = (AtlasConfig) await Resources.LoadAsync<AtlasConfig>(typeof(AtlasConfig).Name);
+#endif
+
         }
 
         public SpriteAtlas GetAtlas(AtlasType atlasType)

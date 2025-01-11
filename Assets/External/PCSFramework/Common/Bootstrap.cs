@@ -1,8 +1,12 @@
 using UnityEngine;
 using Cysharp.Threading.Tasks;
-using PCS.Common;
+#if PCS_SceneManagement
 using PCS.SceneManagement;
+#endif
+#if PCS_DI
 using PCS.DI.Core;
+#endif
+using PCS.UI;
 
 #if UNITY_EDITOR
 using UnityEditor.SceneManagement;
@@ -34,6 +38,8 @@ public static class Bootstrap
 #if PCS_DI
         DIBootstrapper.Boot();
 #endif
+        ScreenResolutionController.Initialize();  
+
         /*
         await UnityEngine.SceneManagement.SceneManager.LoadSceneAsync(BOOT_SCENE, LoadSceneMode.Additive);
         await AtlasManager.Instance.InitializeAsync();

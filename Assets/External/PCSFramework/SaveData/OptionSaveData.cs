@@ -12,13 +12,15 @@ namespace PCS.SaveData
 
     public class OptionSaveData : SaveData<OptionSaveData>
     {
-        public QualityType ResolutionQuality { get; set; } = QualityType.Normal;
-        public Vector2Int Resolution { get; set; } = Vector2Int.zero;
-        public bool IsFullScreen { get; set; } = true;
-        public float MasterVolume { get; set; } = 1f;
-        public float BGMVolume { get; set; } = 1f;
-        public float SFXVolume { get; set; } = 1f;
-        public SystemLanguage Language { get; set; } = SystemLanguage.Korean;
-        public bool isFirstRun { get; set; } = true;
+        public QualityType ResolutionQuality  = QualityType.Normal;
+        public Vector2Int Resolution = Vector2Int.zero;
+        public bool IsFullScreen = true;
+        public float MasterVolume = 1f;
+        public float BGMVolume = 1f;
+        public float SFXVolume = 1f;
+        public SystemLanguage Language = SystemLanguage.Korean;
+        public bool isFirstRun = true;
+        public int test;
+        public int test2 { get; set; }
     }
 }

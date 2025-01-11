@@ -131,7 +131,6 @@ namespace PCS.SceneManagement
 
             //Load Active Scene
             if (activeScene.State != SceneReferenceState.Unsafe)
-//                await LoadActiveScene(activeScene, LoadSceneMode.Additive);
                 await Addressables.LoadSceneAsync(activeScene.Path, LoadSceneMode.Additive);
 
             if (!_sceneConfig.UseLoadingScene)

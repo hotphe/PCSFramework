@@ -4,22 +4,19 @@ using System.Collections.Generic;
 namespace PCS.Observable
 {
     [Serializable]
-    public class SerializedObservableProperty<T> : ObservableProperty<T>, ISerializationCallbackReceiver
+    public class SerializedObservableProperty<T> : ObservableProperty<T>
     {
-        [SerializeField] private T value;
+        [SerializeField] T value;
+        // 초기값 설정 여부를 추적하기 위한 필드
+
         public SerializedObservableProperty() : base(default) { }
-        public SerializedObservableProperty(T value) : base(value, EqualityComparer<T>.Default) { }
-
-        public void OnAfterDeserialize()
+        public SerializedObservableProperty(T value) : base(value, EqualityComparer<T>.Default)
         {
-            if (EqualityComparer.Equals(GetValue(), value))
-                return;
-            Value = value;
         }
-
-        public void OnBeforeSerialize()
+        
+        private void ForceChange()
         {
-            value = GetValue();
+            Value = value;
         }
     }
 }

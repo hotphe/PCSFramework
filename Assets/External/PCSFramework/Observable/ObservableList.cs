@@ -7,7 +7,7 @@ namespace PCS.Observable
 {
     public class ObservableList<T> : IList<T>, IDisposable
     {
-        [SerializeField] protected List<T> _items;
+        protected List<T> _items;
 
         private bool _disposed;
         public bool IsDisposed => _disposed;
@@ -16,11 +16,13 @@ namespace PCS.Observable
         private ObservableProperty<CollectionObserve<T>> _onAddObservable = new ObservableProperty<CollectionObserve<T>>();
         private ObservableProperty<CollectionObserve<T>> _onInsertObservable = new ObservableProperty<CollectionObserve<T>>();
         private ObservableProperty<CollectionObserve<T>> _onRemoveObservable = new ObservableProperty<CollectionObserve<T>>();
+        private ObservableProperty<CollectionObserve<T>> _onValueChangeObservable = new ObservableProperty<CollectionObserve<T>>();
 
         public Observable<int> ObserveCount() => _onCountChangeObservable;
         public Observable<CollectionObserve<T>> ObserveAdd() => _onAddObservable;
         public Observable<CollectionObserve<T>> ObserveInsert() => _onInsertObservable;
         public Observable<CollectionObserve<T>> ObserveRemove() => _onRemoveObservable;
+        public Observable<CollectionObserve<T>> ObserveValueChange() => _onValueChangeObservable;
 
         public ObservableList()
         {
@@ -37,7 +39,6 @@ namespace PCS.Observable
             _items = collection.ToList();
         }
 
-
         public T this[int index]
         {
             get
@@ -49,7 +50,7 @@ namespace PCS.Observable
                 ThrowIfDisposed();
                 var oldValue = _items[index];
                 _items[index] = value;
-                _onInsertObservable.Nofity(new CollectionObserve<T>(index: index, newValue: value, oldValue: oldValue));
+                _onValueChangeObservable.Notify(new CollectionObserve<T>(index: index, newValue: value, oldValue: oldValue));
             }
         }
 
@@ -61,8 +62,23 @@ namespace PCS.Observable
         {
             ThrowIfDisposed();
             _items.Add(item);
-            _onAddObservable.Nofity(new CollectionObserve<T>(index: _items.Count, newValue: item));
-            _onCountChangeObservable.Nofity(Count);
+            _onAddObservable.Notify(new CollectionObserve<T>(index: _items.Count, newValue: item));
+            _onCountChangeObservable.Notify(Count);
+        }
+
+        public void AddRange(IEnumerable<T> collection)
+        {
+            if (collection == null) throw new ArgumentNullException(nameof(collection), "The collection cannot be null.");
+
+            if (collection.Count() > 0)
+            {
+                foreach (T item in collection)
+                {
+                    _items.Add(item);
+                    _onAddObservable.Notify(new CollectionObserve<T>(index: _items.Count, newValue: item));
+                }
+                _onCountChangeObservable.Notify(Count);
+            }
         }
 
         public void Clear()
@@ -72,7 +88,7 @@ namespace PCS.Observable
             foreach (var item in itemsToRemove)
                 Remove(item);
             _items.Clear();
-            _onCountChangeObservable.Nofity(Count);
+            _onCountChangeObservable.Notify(Count);
         }
 
         public bool Contains(T item)
@@ -124,7 +140,7 @@ namespace PCS.Observable
             ThrowIfDisposed();
             var oldValue = _items[index];
             _items.Insert(index, item);
-            _onInsertObservable.Nofity(new CollectionObserve<T>(index: index, newValue: item, oldValue: oldValue));
+            _onInsertObservable.Notify(new CollectionObserve<T>(index: index, newValue: item, oldValue: oldValue));
         }
 
         public bool Remove(T item)
@@ -134,8 +150,8 @@ namespace PCS.Observable
             bool removed = _items.Remove(item);
             if (removed)
             {
-                _onRemoveObservable.Nofity(new CollectionObserve<T>(index: index, newValue: item, oldValue: item));
-                _onCountChangeObservable.Nofity(Count);
+                _onRemoveObservable.Notify(new CollectionObserve<T>(index: index, newValue: item, oldValue: item));
+                _onCountChangeObservable.Notify(Count);
             }
             return removed;
         }
@@ -150,8 +166,8 @@ namespace PCS.Observable
             }
             T item = _items[index];
             _items.RemoveAt(index);
-            _onRemoveObservable.Nofity(new CollectionObserve<T>(index: index, newValue: item, oldValue: item));
-            _onCountChangeObservable.Nofity(Count);
+            _onRemoveObservable.Notify(new CollectionObserve<T>(index: index, newValue: item, oldValue: item));
+            _onCountChangeObservable.Notify(Count);
         }
 
         IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();

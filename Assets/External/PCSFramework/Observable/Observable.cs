@@ -1,9 +1,26 @@
 using System;
+using System.Collections.Generic;
 using System.Threading;
 namespace PCS.Observable
 {
     public abstract class Observable<T>
     {
+        protected T _value;
+        public T Value
+        {
+            get => _value;
+            set
+            {
+                if (EqualityComparer.Equals(_value, value))
+                    return;
+                _value = value;
+                OnValueChanged(value);
+            }
+        }
+
+        protected IEqualityComparer<T> _equalityComparer;
+        public IEqualityComparer<T> EqualityComparer => _equalityComparer;
+
         public IDisposable Subscribe(Observer<T> observer)
         {
             try
@@ -20,8 +37,8 @@ namespace PCS.Observable
             }
         }
 
-        public abstract void Nofity(T value);
-
+        public abstract void Notify(T value);
+        protected abstract void OnValueChanged(T value);
         protected abstract IDisposable SubscribeCore(Observer<T> observer);
 
         public IDisposable Subscribe(Action<T> onNext)

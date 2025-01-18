@@ -1,49 +1,81 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 namespace PCS.Observable
 {
     [Serializable]
-    public class SerializedObservableList<T> : ObservableList<T>, ISerializationCallbackReceiver
+    public class SerializedObservableList<T> : ObservableList<T>
     {
-        // 인스펙터의 + - 버튼으로 List 수정 시, 기본적으로 list를 아예 새로 할당합니다.
-        // 이때 Subscribe된 객체가 모두 해제되므로 복사본을 사용합니다.
-        private List<T> _prevItems;
-        public void OnAfterDeserialize()
+        // 만약 T가 struct 일 때, Inspector에서 Remove 시 몇번째 요소가 사라졌는지 확인 불가하므로 ID 할당
+        [Serializable]
+        public class ValueMap
         {
-            if (_prevItems == null) _prevItems = new List<T>(_items);
-            if (_items.Count != _prevItems.Count)
-            {
-                if (_items.Count > _prevItems.Count)
-                {
-                    List<T> tempList = new List<T>(_items);
-                    int newItemCount = _items.Count - _prevItems.Count;
-                    _items = new List<T>(_prevItems);
-                    for (int i = tempList.Count - newItemCount; i < tempList.Count; i++)
-                    {
-                        _items.Add(tempList[i]);
-                        ObserveAdd().Nofity(new CollectionObserve<T>(index: i, newValue: _items[i]));
-                    }
-                    ObserveCount().Nofity(_items.Count);
-                }
-                else if (_items.Count < _prevItems.Count)
-                {
-                    int value = _prevItems.Count - _items.Count;
+            public int Id;
+            public T Value;
 
-                    _items = new List<T>(_prevItems);
-                    for (int i = _prevItems.Count - value; i < _prevItems.Count; i++)
-                    {
-                        _items.Remove(_prevItems[i]);
-                        ObserveRemove().Nofity(new CollectionObserve<T>(index: i, newValue: _prevItems[i], oldValue: _prevItems[i]));
-                    }
-                    ObserveCount().Nofity(_items.Count);
-                }
+            public ValueMap(int id, T value)
+            {
+                Id = id;
+                Value = value;
             }
         }
+        [HideInInspector] [SerializeField] private int _counter = 1; // id할당에 사용되는 카운터
+        [HideInInspector] [SerializeField] private int _prevSize;
 
-        public void OnBeforeSerialize()
+        [SerializeField] private List<ValueMap> _newItems;
+        private List<ValueMap> _prevItems = new List<ValueMap>();
+
+        private void ForceChange()
         {
-            _prevItems = new List<T>(_items);
+            if (_items.Count != _newItems.Count)
+            {
+                if (_items.Count < _newItems.Count) // 인스펙터에서 추가했을경우
+                {
+                    for (int i = 0; i < _items.Count; i++)
+                        _newItems[i].Value = _items[i];
+
+                    for (int i = _items.Count; i < _newItems.Count; i++)
+                        Add(_newItems[i].Value);
+                }
+                else if (_items.Count > _newItems.Count) // 인스펙터에서 삭제했을경우
+                {
+                    var indexes = _prevItems
+                        .Select((item, index) => new { Item = item, Index = index })
+                        .Where(x => !_newItems.Any(t2Item => t2Item.Id == x.Item.Id))
+                        .Select(x => x.Index)
+                        .ToList();
+
+                    // 역순으로 정렬
+                    indexes = indexes.OrderByDescending(x => x).ToList();
+
+                    for (int i = 0; i < indexes.Count; i++)
+                    {
+                        RemoveAt(indexes[i]);
+                    }
+
+                    for (int i = 0; i < _newItems.Count; i++)
+                        _newItems[i].Value = _items[i];
+                }
+            }
+            else
+            {
+                for (int i = 0; i < _newItems.Count; i++)
+                {
+                    if (_prevItems[i].Id.Equals(_newItems[i].Id))
+                        continue;
+                    this[i] = _newItems[i].Value;
+                }
+            }
+
+            _prevItems = new List<ValueMap>();
+            ValueMap vm;
+            foreach (var item in _newItems)
+            {
+                vm = new ValueMap(item.Id, item.Value);
+                _prevItems.Add(vm);
+            }
+            _prevSize = _prevItems.Count;
         }
     }
 }

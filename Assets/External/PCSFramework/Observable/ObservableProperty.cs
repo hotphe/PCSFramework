@@ -5,27 +5,9 @@ namespace PCS.Observable
 {
     public class ObservableProperty<T> : Observable<T>, IDisposable
     {
-        private T _value;
-
-        private IEqualityComparer<T> _equalityComparer;
-        public IEqualityComparer<T> EqualityComparer => _equalityComparer;
-
         private ObserverNode _root;
         private bool _disposed;
         public bool IsDisposed => _disposed;
-
-        public T Value
-        {
-            get => _value;
-            set
-            {
-                if (EqualityComparer.Equals(_value, value))
-                    return;
-                _value = value;
-                OnValueChanged(value);
-            }
-        }
-        protected T GetValue() => _value;
 
         public ObservableProperty() : this(default) { }
 
@@ -39,12 +21,12 @@ namespace PCS.Observable
             _value = value;
         }
 
-        public override void Nofity(T value)
+        public override void Notify(T value)
         {
             OnValueChanged(value);
         }
 
-        protected void OnValueChanged(T value)
+        protected override void OnValueChanged(T value)
         {
             ThrowIfDisposed();
 

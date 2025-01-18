@@ -58,7 +58,7 @@ namespace PCS.Observable
 
         public bool IsReadOnly => false;
 
-        public void Add(T item)
+        public virtual void Add(T item)
         {
             ThrowIfDisposed();
             _items.Add(item);
@@ -66,7 +66,7 @@ namespace PCS.Observable
             _onCountChangeObservable.Notify(Count);
         }
 
-        public void AddRange(IEnumerable<T> collection)
+        public virtual void AddRange(IEnumerable<T> collection)
         {
             if (collection == null) throw new ArgumentNullException(nameof(collection), "The collection cannot be null.");
 
@@ -135,7 +135,7 @@ namespace PCS.Observable
             }
         }
 
-        public void Insert(int index, T item)
+        public virtual void Insert(int index, T item)
         {
             ThrowIfDisposed();
             var oldValue = _items[index];
@@ -143,7 +143,7 @@ namespace PCS.Observable
             _onInsertObservable.Notify(new CollectionObserve<T>(index: index, newValue: item, oldValue: oldValue));
         }
 
-        public bool Remove(T item)
+        public virtual bool Remove(T item)
         {
             ThrowIfDisposed();
             var index = _items.IndexOf(item);
@@ -156,7 +156,7 @@ namespace PCS.Observable
             return removed;
         }
 
-        public void RemoveAt(int index)
+        public virtual void RemoveAt(int index)
         {
             ThrowIfDisposed();
             if (index >= _items.Count)

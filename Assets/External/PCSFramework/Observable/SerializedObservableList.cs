@@ -23,7 +23,7 @@ namespace PCS.Observable
         [HideInInspector] [SerializeField] private int _counter = 1; // id할당에 사용되는 카운터
         [HideInInspector] [SerializeField] private int _prevSize;
 
-        [SerializeField] private List<ValueMap> _newItems;
+        [SerializeField] private List<ValueMap> _newItems = new List<ValueMap>();
         private List<ValueMap> _prevItems = new List<ValueMap>();
 
         private void ForceChange()
@@ -36,7 +36,7 @@ namespace PCS.Observable
                         _newItems[i].Value = _items[i];
 
                     for (int i = _items.Count; i < _newItems.Count; i++)
-                        Add(_newItems[i].Value);
+                        base.Add(_newItems[i].Value);
                 }
                 else if (_items.Count > _newItems.Count) // 인스펙터에서 삭제했을경우
                 {
@@ -51,7 +51,7 @@ namespace PCS.Observable
 
                     for (int i = 0; i < indexes.Count; i++)
                     {
-                        RemoveAt(indexes[i]);
+                        base.RemoveAt(indexes[i]);
                     }
 
                     for (int i = 0; i < _newItems.Count; i++)
@@ -75,6 +75,51 @@ namespace PCS.Observable
                 vm = new ValueMap(item.Id, item.Value);
                 _prevItems.Add(vm);
             }
+            _prevSize = _prevItems.Count;
+        }
+        
+        public override void Add(T item)
+        {
+            base.Add(item);
+            _newItems.Add(new ValueMap(_counter++, item));
+            _prevItems.Add(new ValueMap(_counter++, item));
+            _prevSize = _prevItems.Count;
+        }
+
+        public override void AddRange(IEnumerable<T> collection)
+        {
+            base.AddRange(collection);
+            foreach(var item in collection)
+            {
+                _newItems.Add(new ValueMap(_counter++, item));
+                _prevItems.Add(new ValueMap(_counter++, item));
+            }
+            _prevSize = _prevItems.Count;
+        }
+
+        public override void Insert(int index, T item)
+        {
+            base.Insert(index, item);
+            _newItems.Insert(index, new ValueMap(_counter++, item));
+            _prevItems.Insert(index, new ValueMap(_counter++, item));
+            _prevSize = _prevItems.Count;
+        }
+
+        public override bool Remove(T item)
+        {
+            var index = _items.IndexOf(item);
+            _newItems.RemoveAt(index);
+            _prevItems.RemoveAt(index);
+            _prevSize = _prevItems.Count;
+            base.Remove(item);
+            return true;
+        }
+
+        public override void RemoveAt(int index)
+        {
+            base.RemoveAt(index);
+            _newItems.RemoveAt(index);
+            _prevItems.RemoveAt(index);
             _prevSize = _prevItems.Count;
         }
     }

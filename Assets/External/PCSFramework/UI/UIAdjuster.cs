@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using PCS.Common;
+using UnityEngine.UIElements;
 
 namespace PCS.UI
 {
@@ -24,6 +25,9 @@ namespace PCS.UI
         [SerializeField] private AspectRatioFitter _backgroundRatioFitter;
         [SerializeField] private RectTransform _holderPanel;
         [SerializeField] private AspectRatioFitter _holderAspectRatioFitter;
+
+        [SerializeField] private RectTransform _actualAreaPanel;
+
         [SerializeField] private RectTransform _topPanel;
         [SerializeField] private RectTransform _centerPanel;
         [SerializeField] private RectTransform _bottomPanel;
@@ -108,6 +112,11 @@ namespace PCS.UI
 
                 _letterBox.gameObject.SetActive(true);
                 _letterBoxMask.sizeDelta = _referenceScreenSize;
+
+                _actualAreaPanel.anchorMin = new Vector2(0.5f, 0.5f);
+                _actualAreaPanel.anchorMax = new Vector2(0.5f, 0.5f);
+                _actualAreaPanel.anchoredPosition = Vector3.zero;
+                _actualAreaPanel.sizeDelta = _referenceScreenSize;
             }
             else
             {
@@ -115,6 +124,11 @@ namespace PCS.UI
                 _holderAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.None;
                 _holderPanel.offsetMin = Vector2.zero;
                 _holderPanel.offsetMax = Vector2.zero;
+
+                _actualAreaPanel.offsetMin = Vector2.zero;
+                _actualAreaPanel.offsetMax = Vector2.zero;
+                _actualAreaPanel.anchorMin = Vector2.zero;
+                _actualAreaPanel.anchorMax = Vector2.one;
             }
 
             Vector2 midOffsetMin = new Vector2(0, 0);

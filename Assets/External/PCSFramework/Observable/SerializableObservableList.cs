@@ -5,9 +5,10 @@ using System.Linq;
 using UnityEngine;
 namespace PCS.Observable
 {
-    public class ObservableList<T> : IList<T>, IDisposable
+    [Serializable]
+    public class SerializableObservableList<T> : IList<T>, IDisposable
     {
-        protected List<T> _items;
+        [SerializeField] private List<T> _items;
 
         private bool _disposed;
         public bool IsDisposed => _disposed;
@@ -24,22 +25,22 @@ namespace PCS.Observable
         public Observable<CollectionObserve<T>> ObserveRemove() => _onRemoveObservable;
         public Observable<CollectionObserve<T>> ObserveValueChange() => _onValueChangeObservable;
 
-        public ObservableList()
+        public SerializableObservableList()
         {
             _items = new List<T>();
         }
 
-        public ObservableList(int capacity)
+        public SerializableObservableList(int capacity)
         {
             _items = new List<T>(capacity);
         }
 
-        public ObservableList(IEnumerable<T> collection)
+        public SerializableObservableList(IEnumerable<T> collection)
         {
             _items = collection.ToList();
         }
 
-        public T this[int index]
+        public virtual T this[int index]
         {
             get
             {

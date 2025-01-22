@@ -20,7 +20,7 @@ namespace PCS.Observable
             _equalityComparer = equalityComparer;
             _value = value;
         }
-
+        
         public override void Notify(T value)
         {
             OnValueChanged(value);

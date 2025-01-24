@@ -18,7 +18,8 @@ Name 태그 기능과 AllowRebind 기능을 추가하였습니다.
 ### Observable
 [UniRx](https://github.com/neuecc/UniRx) 를 기반으로 작성한 Observable 코드입니다.<br/>
 가볍게 Subscribe 및 Notify만을 추가 하였습니다.<br/>
-Unirx 및 r3에서 지원하지 않는 Serializable Observable List를 제공합니다. 런타임 중 Inspector에서 List에 변화를 줄 경우(Add, Remove, ValueChange) Subscribe가 작동합니다.
+Unirx 및 r3에서 지원하지 않는 Serializable Observable List를 제공합니다. <br/>
+런타임 중 Inspector에서 List에 변화를 줄 경우(Add, Remove, ValueChange) Subscribe가 작동합니다.
 
 ### SaveData
 PlayerPrefs 기반으로 작동하는 세이브 시스템입니다.<br/>

@@ -26,7 +26,7 @@ PlayerPrefs 기반으로 작동하는 세이브 시스템입니다.<br/>
 옵션과 같은 게임 내 하나만 존재해야 하는 것의 저장에 적합합니다.
 
 ### SceneManagement
-SceneConfig에 입력된 데이터를 바탕으로 게임 시작 시 필수 씬을 로드하고, 해당 씬의 PresenterBase의 Initialize 함수를 호출합니다.<br/>
+SceneConfig에 입력된 데이터를 바탕으로 게임 시작 시 필수 씬을 로드하고, 현재 씬의 PresenterBase의 Initialize 함수를 호출합니다.<br/>
 MVP 패턴 사용시 사용됩니다.<br/>
 씬 전환 시 연출 효과용 코드 및 프리팹이 포함되어있으며, 주로 필수 씬에 연출 효과용 프리팹을 추가하여 사용합니다.
 

@@ -4,33 +4,33 @@ Unity 개발 시 사용하는 개인 Framework 소스코드 입니다.
 해당 코드는 독학과 실무 경험을 바탕으로 작성한 것으로, 학원 교육이나 강사의 도움 없이 개발되었습니다.
 
 ### Common
-Framework에서 공통적으로 사용되는 코드입니다.
-일부 코드의 경우 외부에서 독단으로 사용 가능합니다. (추후 분리 예정)
+Framework에서 공통적으로 사용되는 코드입니다.<br/>
+일부 코드의 경우 외부에서 독단으로 사용 가능합니다. (추후 분리 예정)<br/>
 각종 Inspector를 표시해 줄 Attribute와 Insepctor에서 수정 및 편집이 가능한 SerializedDictionary가 포함되어있습니다.
 
 ### Crypto
 암호화 코드입니다. 데이터를 암호화 및 복호화 할때 사용합니다.
 
 ### NewDI
-[Reflex](https://github.com/gustavopsantos/Reflex) 를 기반으로 작성한 DI Framework 입니다.
+[Reflex](https://github.com/gustavopsantos/Reflex) 를 기반으로 작성한 DI Framework 입니다.<br/>
 Name 태그 기능과 AllowRebind 기능을 추가하였습니다.
 
 ### Observable
-[UniRx](https://github.com/neuecc/UniRx) 를 기반으로 작성한 Observable 코드입니다.
-가볍게 Subscribe 및 Notify만을 추가 하였습니다.
+[UniRx](https://github.com/neuecc/UniRx) 를 기반으로 작성한 Observable 코드입니다.<br/>
+가볍게 Subscribe 및 Notify만을 추가 하였습니다.<br/>
 Unirx 및 r3에서 지원하지 않는 Serializable Observable List를 제공합니다. 런타임 중 Inspector에서 List에 변화를 줄 경우(Add, Remove, ValueChange) Subscribe가 작동합니다.
 
 ### SaveData
-PlayerPrefs 기반으로 작동하는 세이브 시스템입니다.
+PlayerPrefs 기반으로 작동하는 세이브 시스템입니다.<br/>
 옵션과 같은 게임 내 하나만 존재해야 하는 것의 저장에 적합합니다.
 
 ### SceneManagement
-SceneConfig에 입력된 데이터를 바탕으로 게임 시작 시 필수 씬을 로드하고, 해당 씬의 PresenterBase의 Initialize 함수를 호출합니다.
-MVP 패턴 사용시 사용됩니다.
+SceneConfig에 입력된 데이터를 바탕으로 게임 시작 시 필수 씬을 로드하고, 해당 씬의 PresenterBase의 Initialize 함수를 호출합니다.<br/>
+MVP 패턴 사용시 사용됩니다.<br/>
 씬 전환 시 연출 효과용 코드 및 프리팹이 포함되어있으며, 주로 필수 씬에 연출 효과용 프리팹을 추가하여 사용합니다.
 
 ### Sound
-효과음 및 배경음에 사용됩니다. ObjectPool 기반으로 효과음 출력 시 해당 효과음을 추가한 object를 생성 및 반환하는 구조로 되어있습니다.
+효과음 및 배경음에 사용됩니다. ObjectPool 기반으로 효과음 출력 시 해당 효과음을 추가한 object를 생성 및 반환하는 구조로 되어있습니다.<br/>
 SoundConfig 에 SerializedDictionary를 이용해 각 사운드별 Key Value를 설정할 수 있습니다.
 
 ### UI

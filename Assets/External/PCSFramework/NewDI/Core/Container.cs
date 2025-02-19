@@ -49,8 +49,8 @@ namespace PCS.DI.Core
                 return All(elementType).CastDynamic(elementType);
             }
             var resolvers = GetResolvers(type);
-            var lastResolver = resolvers.Last();
-            var resolved = lastResolver.Resolve(this);
+            var lastResolver = resolvers?.Last();
+            var resolved = lastResolver?.Resolve(this);
             return resolved;
             
         }
@@ -60,13 +60,7 @@ namespace PCS.DI.Core
             {
                 return resolvers;
             }
-
-            Debug.Log(contract.Name + " / " + Name);
-            foreach(var resolver in ResolversByContract)
-            {
-                Debug.Log(resolver.Key);    
-            }
-            throw new Exception($"{contract} type is not binded.");
+            return null;
         }
 
         public object Resolve(Type type, string name)
@@ -88,8 +82,7 @@ namespace PCS.DI.Core
                 if (dict.TryGetValue(name, out var resolvers))
                     return resolvers;
             }
-
-            throw new Exception($"Named({name}) {contract} type is not binded.");
+            return null;
         }
 
         public IEnumerable<object> All(Type contract)

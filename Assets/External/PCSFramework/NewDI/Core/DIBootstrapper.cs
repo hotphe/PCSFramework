@@ -61,7 +61,6 @@ namespace PCS.DI.Core
                 UnityEngine.SceneManagement.SceneManager.sceneUnloaded -= DisposeScene;
                 Application.quitting -= DisposeProject;
             }
-
             OnSceneLoaded += InjectScene;
             UnityEngine.SceneManagement.SceneManager.sceneUnloaded += DisposeScene;
             Application.quitting += DisposeProject;

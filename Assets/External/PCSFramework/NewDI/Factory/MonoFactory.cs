@@ -12,7 +12,7 @@ public sealed class MonoFactory<TValue> : IFactory<TValue> where TValue : MonoBe
         var value = GameObject.Instantiate(_prefab);
         GameObjectInjector.InjectRecursive(value.gameObject, value.gameObject.scene.GetSceneContainer());
         value.gameObject.SetActive(true);
+
         return value;
-        
     }
 }

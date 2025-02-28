@@ -1,6 +1,6 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using PCS.Common;
-
 [InitializeOnLoad]
 public static class DISymbol
 {
@@ -9,3 +9,4 @@ public static class DISymbol
         DefineSymbolAdder.SetDefineSymbol("PCS_DI");
     }
 }
+#endif

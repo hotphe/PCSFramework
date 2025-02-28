@@ -11,6 +11,13 @@ namespace PCS.UI
         [Condition(nameof(_useLocalScreenSize), true)][SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
         
         [SerializeField] private bool _useLetterBox = false;
+        public Camera MainCamera
+        {
+            get
+            {
+                return Camera.main;
+            }
+        }
 
         [Fold("LetterBox")]
         [SerializeField] private CanvasScaler _letterBoxCanavasScaler;
@@ -72,6 +79,8 @@ namespace PCS.UI
             if (!_useLocalScreenSize)
                 _referenceScreenSize = deviceResolution;
 
+            RescaleCamera();
+
             _rootCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             _rootCanvasScaler.referenceResolution = _referenceScreenSize;
 
@@ -100,6 +109,7 @@ namespace PCS.UI
             _mainPanel.anchorMax = Vector2.one;
             _mainPanel.localPosition = Vector3.zero;
 
+            
             if (_useLetterBox)
             {
                 if(Mathf.Approximately(_rootCanvas.rect.size.x, deviceResolution.x))
@@ -130,6 +140,7 @@ namespace PCS.UI
                 _actualAreaPanel.anchorMin = Vector2.zero;
                 _actualAreaPanel.anchorMax = Vector2.one;
             }
+            
 
             Vector2 midOffsetMin = new Vector2(0, 0);
             Vector2 midOffsetMax = new Vector2(0, 0);
@@ -204,6 +215,44 @@ namespace PCS.UI
             _centerPanel.offsetMin = midOffsetMin;
             _centerPanel.offsetMax = midOffsetMax;
         }
-        
+
+        private void RescaleCamera()
+        {
+            if(!_useLetterBox)
+            {
+                MainCamera.rect = new Rect(0, 0, 1, 1);
+                return;
+            }
+
+            float windowaspect = (float)Screen.width / (float)Screen.height;
+            float scaleheight = windowaspect / _referenceRatio;
+
+            if (scaleheight < 1.0f)
+            {
+                Rect rect = MainCamera.rect;
+
+                rect.width = 1.0f;
+                rect.height = scaleheight;
+                rect.x = 0;
+                rect.y = (1.0f - scaleheight) / 2.0f;
+
+                MainCamera.rect = rect;
+            }
+            else
+            {
+                float scalewidth = 1.0f / scaleheight;
+
+                Rect rect = MainCamera.rect;
+
+                rect.width = scalewidth;
+                rect.height = 1.0f;
+                rect.x = (1.0f - scalewidth) / 2.0f;
+                rect.y = 0;
+
+                MainCamera.rect = rect;
+            }
+
+        }
+
     }
 }

@@ -1,3 +1,4 @@
+#if UNITY_EDITOR
 using UnityEditor;
 using PCS.Common;
 
@@ -9,3 +10,4 @@ public static class SceneManagementSymbol
         DefineSymbolAdder.SetDefineSymbol("PCS_SceneManagement");
     }
 }
+#endif

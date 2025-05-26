@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using PCS.Common;
@@ -11,11 +12,14 @@ namespace PCS.UI
         [Condition(nameof(_useLocalScreenSize), true)][SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
         
         [SerializeField] private bool _useLetterBox = false;
+        [SerializeField] private Camera _targetCamera = null;
         public Camera MainCamera
         {
             get
             {
-                return Camera.main;
+                if(_targetCamera == null)
+                    _targetCamera = Camera.main;
+                return _targetCamera;
             }
         }
 
@@ -65,13 +69,7 @@ namespace PCS.UI
 
         private void Start()
         {
-            Apply(ScreenResolutionController.DeviceResolution);
-            ScreenResolutionController.OnUpdateDeviceResolution += Apply;
-        }
-
-        private void OnDestroy()
-        {
-            ScreenResolutionController.OnUpdateDeviceResolution -= Apply;
+            Apply(new Vector2(Screen.width, Screen.height));
         }
 
         public void Apply(Vector2 deviceResolution)
@@ -100,8 +98,8 @@ namespace PCS.UI
             
             _holderPanel.anchorMin = minAnchor;
             _holderPanel.anchorMax = maxAnchor;
-            _letterBoxMaskSizer.anchorMin = minAnchor;
-            _letterBoxMaskSizer.anchorMax = maxAnchor;
+            //_letterBoxMaskSizer.anchorMin = minAnchor;
+            //_letterBoxMaskSizer.anchorMax = maxAnchor;
 
             _mainPanel.offsetMin = Vector2.zero;
             _mainPanel.offsetMax = Vector2.zero;
@@ -224,6 +222,7 @@ namespace PCS.UI
                 return;
             }
 
+            
             float windowaspect = (float)Screen.width / (float)Screen.height;
             float scaleheight = windowaspect / _referenceRatio;
 
@@ -251,7 +250,7 @@ namespace PCS.UI
 
                 MainCamera.rect = rect;
             }
-
+            
         }
 
     }

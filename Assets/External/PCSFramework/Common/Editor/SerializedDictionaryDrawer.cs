@@ -14,20 +14,27 @@ namespace PCS.Common.Editor
         private GUIContent _waringIcon;
         private bool _hasAlert;
         private string _status;
+        private bool _prevEnabled;
 
         public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
         {
             _waringIcon = EditorGUIUtility.IconContent("console.warnicon");
             _hasAlert = false;
-
+            _prevEnabled = true;
             SetupProps(property);
+            if (GUI.enabled == false)
+            {
+                _prevEnabled = false;
+                GUI.enabled = true;
+            }
             SetupHeader(position, property);
-
+            GUI.enabled = _prevEnabled;
             if (!property.isExpanded) return;
             SetupList(property);
 
             Rect rect = position;
             rect.y += EditorGUIUtility.singleLineHeight;
+            rect.x -= 3;
             _reorderableList.DoList(rect);
             DrawAlertBox();
 
@@ -44,6 +51,7 @@ namespace PCS.Common.Editor
         private void SetupHeader(Rect rect, SerializedProperty prop)
         {
             rect.height = EditorGUIUtility.singleLineHeight;
+            rect.x -= 3;
             var headerRect = rect;
             headerRect.width = headerRect.width - 50;
 
@@ -60,13 +68,21 @@ namespace PCS.Common.Editor
             }
 
             var triangleRect = rect;
-            EditorGUI.Foldout(triangleRect, prop.isExpanded, prop.name);
+            EditorGUI.Foldout(triangleRect, prop.isExpanded, ChangeName(prop.name));
 
             var countRect = headerRect;
             countRect.width = 50;
             countRect.x = headerRect.width;
-
+            countRect.x -= 3;
             _kvpsProp.arraySize = EditorGUI.DelayedIntField(countRect, _kvpsProp.arraySize);
+        }
+
+        private string ChangeName(string name)
+        {
+            if (string.IsNullOrEmpty(name)) return name;
+            if(name.StartsWith("_")) name = name.Substring(1);
+            if(name.Length > 0 && char.IsLower(name[0])) name = char.ToUpper(name[0]) + name.Substring(1);
+            return name;
         }
 
         private void SetupList(SerializedProperty prop)
@@ -103,11 +119,13 @@ namespace PCS.Common.Editor
         {
             var kvpProp = _kvpsProp.GetArrayElementAtIndex(index);
             var keyProp = kvpProp.FindPropertyRelative("Key");
-            var valueProp = kvpProp.FindPropertyRelative("Value");
+            var valueProp = kvpProp.FindPropertyRelative("Value"); 
 
-            return Mathf.Max(GetPropHeight(keyProp), GetPropHeight(valueProp));
+            float keyHeight = EditorGUI.GetPropertyHeight(keyProp, true);
+            float valueHeight = EditorGUI.GetPropertyHeight(valueProp, true); 
+
+            return Mathf.Max(keyHeight, valueHeight) + EditorGUIUtility.standardVerticalSpacing;
         }
-
         private float GetPropHeight(SerializedProperty prop)
         {
             var height = EditorGUI.GetPropertyHeight(prop);
@@ -124,9 +142,7 @@ namespace PCS.Common.Editor
                 EditorGUI.PropertyField(rect, prop, GUIContent.none);
                 return;
             }
-
-            prop.isExpanded = true;
-
+            
             GUI.BeginGroup(rect);
 
             if (prop.type == "EventReference")
@@ -139,8 +155,8 @@ namespace PCS.Common.Editor
             }
             else
             {
-                rect.x = 0;
-                rect.y = -20; // Value foldout 가리기용
+                rect.x = 20;
+                rect.y = 0;
                 EditorGUI.PropertyField(rect, prop, true);
             }
 

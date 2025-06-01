@@ -6,13 +6,27 @@ using UnityEngine.UIElements;
 
 namespace PCS.UI
 {
+    public enum ERescaleMode
+    {
+        None,
+        ViewPort,
+        Size
+    }
+    
     public class UIAdjuster : MonoBehaviour
     {
         [SerializeField] private bool _useLocalScreenSize = false;
         [Condition(nameof(_useLocalScreenSize), true)][SerializeField] private Vector2 _referenceScreenSize = new Vector2(1080, 1920);
         
+        [Tooltip("레터박스(필러박스) 사용 여부")]
         [SerializeField] private bool _useLetterBox = false;
+
+        [Tooltip("리스케일 모드\nNone : 리스케일 없음\nViewPort : 뷰포트 조절. 자동 LetterBox사용\nSize : Unit 기준 CameraSize 조절")]
+        [SerializeField] private ERescaleMode _rescaleMode = ERescaleMode.None;
+        [ShowIfEnum(nameof(_rescaleMode), ERescaleMode.Size)] [SerializeField] private float _contentWorldWidth;
+        
         [SerializeField] private Camera _targetCamera = null;
+        [SerializeField] private ScreenSizeChangeListener _screenSizeChangeListener = null;
         public Camera MainCamera
         {
             get
@@ -72,12 +86,26 @@ namespace PCS.UI
             Apply(new Vector2(Screen.width, Screen.height));
         }
 
+        private void OnEnable()
+        {
+            if (_screenSizeChangeListener == null)
+                return;
+            _screenSizeChangeListener.OnScreenSizeChanged += Apply;
+        }
+        
+        private void OnDisable()
+        {
+            if (_screenSizeChangeListener == null)
+                return;
+            _screenSizeChangeListener.OnScreenSizeChanged -= Apply;
+        }
+
         public void Apply(Vector2 deviceResolution)
         {
             if (!_useLocalScreenSize)
                 _referenceScreenSize = deviceResolution;
 
-            RescaleCamera();
+            RescaleCamera(deviceResolution);
 
             _rootCanvasScaler.screenMatchMode = CanvasScaler.ScreenMatchMode.Expand;
             _rootCanvasScaler.referenceResolution = _referenceScreenSize;
@@ -214,16 +242,9 @@ namespace PCS.UI
             _centerPanel.offsetMax = midOffsetMax;
         }
 
-        private void RescaleCamera()
+        private void ResizeCameraViewPort(Vector2 deviceResolution)
         {
-            if(!_useLetterBox)
-            {
-                MainCamera.rect = new Rect(0, 0, 1, 1);
-                return;
-            }
-
-            
-            float windowaspect = (float)Screen.width / (float)Screen.height;
+            float windowaspect = deviceResolution.x / deviceResolution.y;
             float scaleheight = windowaspect / _referenceRatio;
 
             if (scaleheight < 1.0f)
@@ -250,8 +271,49 @@ namespace PCS.UI
 
                 MainCamera.rect = rect;
             }
+        }
+
+        private void ResizeCameraSize(Vector2 deviceResolution)
+        {                
+            if (!MainCamera.orthographic)
+            {
+                Debug.LogError("RescaleMode.Size only works with orthographic.");
+                return;
+            }
+            float windowaspect = deviceResolution.x / deviceResolution.y;
+            Rect newViewportRect = new Rect(0, 0, 1, 1);
+            float idealOrthoSizeForRefView = (_contentWorldWidth / _referenceRatio) / 2.0f;
+            float newOrthoSize;
+            if (windowaspect <= _referenceRatio)
+            {
+                newOrthoSize = _contentWorldWidth / (2.0f * windowaspect);
+            }
+            else
+            {
+                newOrthoSize = idealOrthoSizeForRefView;
+            }
+
+            _targetCamera.orthographicSize = newOrthoSize;
+            _targetCamera.rect = newViewportRect;
             
         }
+        private void RescaleCamera(Vector2 deviceResolution)
+        {
+            switch (_rescaleMode)
+            {
+                case ERescaleMode.None:
+                    MainCamera.rect = new Rect(0, 0, 1, 1);
+                    return;
+                case ERescaleMode.ViewPort:
+                    ResizeCameraViewPort(deviceResolution);
+                    return;
+                case ERescaleMode.Size:
+                    ResizeCameraSize(deviceResolution);
+                    return;
+            }
+        }
+        
+        
 
     }
 }
